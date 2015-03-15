@@ -1,10 +1,13 @@
 package lukazitnik.jshint;
 
+import java.io.IOException;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import org.netbeans.spi.tasklist.FileTaskScanner;
 import org.netbeans.spi.tasklist.Task;
 import org.openide.filesystems.FileObject;
+import org.openide.util.Exceptions;
 import org.openide.util.NbBundle;
 
 /**
@@ -27,10 +30,19 @@ public class JSHintFileTaskScanner extends FileTaskScanner {
     @Override
     public List<? extends Task> scan(FileObject fo) {
 
-        LinkedList<Task> tasks = new LinkedList<Task>();
+        if (fo.isFolder() || !fo.getExt().equals("js")) {
+            return Collections.<Task>emptyList();
+        }
 
-        if (!fo.isFolder()) {
-            tasks.add(Task.create(fo, "nb-tasklist-jshint", fo.getNameExt(), 1));
+        LinkedList<Task> tasks = new LinkedList<Task>();
+        JSHint jshint = new JSHint();
+
+        try {
+            for (JSHintError error : jshint.lint(fo.asText())) {
+                tasks.add(Task.create(fo, "nb-tasklist-jshint", error.getReason(), error.getLine()));
+            }
+        } catch (IOException ex) {
+            Exceptions.printStackTrace(ex);
         }
 
         return tasks;
