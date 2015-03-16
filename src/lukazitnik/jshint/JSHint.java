@@ -23,14 +23,15 @@ public class JSHint {
     public JSHint() {
     }
 
-    public LinkedList<JSHintError> lint(String script) {
+    public LinkedList<JSHintError> lint(FileObject fo) {
         Context cx = Context.enter();
         Scriptable scope = cx.initStandardObjects();
         LinkedList<JSHintError> result = new LinkedList<JSHintError>();
 
         try {
             Function jshint = getJSHint(cx, scope);
-            Object args[] = {script};
+            Object config = getConfig(fo);
+            Object args[] = {fo.asText()};
 
             jshint.call(cx, scope, scope, args);
 
@@ -48,6 +49,34 @@ public class JSHint {
         return result;
     }
 
+    private Object getConfig(FileObject fo) throws IOException {
+        FileObject config = findConfig(fo);
+
+        if (config == null) {
+            return "";
+        }
+
+        return config.asText();
+    }
+
+    private FileObject findConfig(FileObject fo) {
+        return findFile(".jshintrc", fo);
+    }
+
+    public static FileObject findFile(String name, FileObject folder) {
+        FileObject fo = folder.getFileObject(name, "");
+
+        if (fo != null && fo.isData()) {
+            return fo;
+        }
+
+        if (folder.isRoot()) {
+            return null;
+        }
+
+        return findFile(name, folder.getParent());
+    }
+
     private Function getJSHint(Context cx, Scriptable scope) throws IOException {
         Reader in = getReader();
         cx.evaluateReader(scope, in, "jshint.js", 1, null);
@@ -55,7 +84,11 @@ public class JSHint {
     }
 
     private Reader getReader() throws IOException {
+
+        // jshint.js is the web bundle of the JSHint, downloaded from
+        // https://raw.githubusercontent.com/jshint/jshint/master/dist/jshint.js
         InputStream stream = getClass().getResourceAsStream("jshint.js");
+
         return new BufferedReader(new InputStreamReader(stream));
     }
 }
