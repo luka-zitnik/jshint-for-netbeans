@@ -43,4 +43,27 @@ public class JSHintTest {
         Assert.assertEquals(file, result);
     }
 
+    @Test
+    public void testLintWithConfig() throws IOException {
+        FileSystem fs = FileUtil.createMemoryFileSystem();
+
+        FileObject jsFo = fs.getRoot().createData("index.js");
+        PrintWriter jsOut = (new PrintWriter(jsFo.getOutputStream()));
+        jsOut.write("while (day)\n  shuffle();");
+        jsOut.close();
+
+        FileObject configFo = fs.getRoot().createData(".jshintrc");
+        PrintWriter configOut = (new PrintWriter(configFo.getOutputStream()));
+        configOut.write("{\"curly\":true,\"undef\":true}");
+        configOut.close();
+
+        JSHint jshint = new JSHint();
+        LinkedList<JSHintError> errors = jshint.lint(jsFo);
+        Assert.assertEquals(3, errors.size());
+
+        for (JSHintError error : errors) {
+            System.out.println(error.getReason());
+        }
+    }
+
 }

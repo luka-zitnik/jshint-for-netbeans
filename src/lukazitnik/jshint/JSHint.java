@@ -6,6 +6,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.LinkedList;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.openide.filesystems.FileObject;
 import org.openide.util.Exceptions;
 import sun.org.mozilla.javascript.Context;
@@ -30,8 +33,8 @@ public class JSHint {
 
         try {
             Function jshint = getJSHint(cx, scope);
-            Object config = getConfig(fo);
-            Object args[] = {fo.asText()};
+            Scriptable config = jsonObjectToScriptable(cx, scope, getConfig(fo));
+            Object args[] = {fo.asText(), config};
 
             jshint.call(cx, scope, scope, args);
 
@@ -42,6 +45,8 @@ public class JSHint {
             }
         } catch (IOException ex) {
             Exceptions.printStackTrace(ex);
+        } catch (ParseException ex) {
+            Exceptions.printStackTrace(ex);
         } finally {
             Context.exit();
         }
@@ -49,18 +54,19 @@ public class JSHint {
         return result;
     }
 
-    private Object getConfig(FileObject fo) throws IOException {
+    private JSONObject getConfig(FileObject fo) throws IOException, ParseException {
+        JSONParser parser = new JSONParser();
         FileObject config = findConfig(fo);
 
         if (config == null) {
-            return "";
+            return (JSONObject) parser.parse("{}");
         }
 
-        return config.asText();
+        return (JSONObject) parser.parse(config.asText());
     }
 
     private FileObject findConfig(FileObject fo) {
-        return findFile(".jshintrc", fo);
+        return findFile(".jshintrc", fo.getParent());
     }
 
     public static FileObject findFile(String name, FileObject folder) {
@@ -75,6 +81,16 @@ public class JSHint {
         }
 
         return findFile(name, folder.getParent());
+    }
+
+    private Scriptable jsonObjectToScriptable(Context cx, Scriptable scope, JSONObject obj) {
+        Scriptable scriptable = cx.newObject(scope);
+
+        for (Object key : obj.keySet()) {
+            scriptable.put(key.toString(), scope, obj.get(key));
+        }
+
+        return scriptable;
     }
 
     private Function getJSHint(Context cx, Scriptable scope) throws IOException {
