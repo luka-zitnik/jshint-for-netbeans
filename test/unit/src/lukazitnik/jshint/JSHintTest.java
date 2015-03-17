@@ -59,11 +59,11 @@ public class JSHintTest {
 
         JSHint jshint = new JSHint();
         LinkedList<JSHintError> errors = jshint.lint(jsFo);
-        Assert.assertEquals(3, errors.size());
 
-        for (JSHintError error : errors) {
-            System.out.println(error.getReason());
-        }
+        Assert.assertEquals(3, errors.size());
+        Assert.assertEquals("'shuffle' is not defined.", errors.pop().getReason());
+        Assert.assertEquals("'day' is not defined.", errors.pop().getReason());
+        Assert.assertEquals("Expected '{' and instead saw 'shuffle'.", errors.pop().getReason());
     }
 
 }

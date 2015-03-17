@@ -33,7 +33,7 @@ public class JSHint {
 
         try {
             Function jshint = getJSHint(cx, scope);
-            Scriptable config = jsonObjectToScriptable(cx, scope, getConfig(fo));
+            Scriptable config = jsonToScriptable(cx, scope, getConfig(fo));
             Object args[] = {fo.asText(), config};
 
             jshint.call(cx, scope, scope, args);
@@ -83,11 +83,11 @@ public class JSHint {
         return findFile(name, folder.getParent());
     }
 
-    private Scriptable jsonObjectToScriptable(Context cx, Scriptable scope, JSONObject obj) {
+    private Scriptable jsonToScriptable(Context cx, Scriptable scope, JSONObject obj) {
         Scriptable scriptable = cx.newObject(scope);
 
         for (Object key : obj.keySet()) {
-            scriptable.put(key.toString(), scope, obj.get(key));
+            scriptable.put(key.toString(), scriptable, obj.get(key).toString());
         }
 
         return scriptable;
