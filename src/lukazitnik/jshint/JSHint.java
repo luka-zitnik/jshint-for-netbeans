@@ -41,6 +41,11 @@ public class JSHint {
             NativeArray errors = (NativeArray) jshint.get("errors", null);
 
             for (Object error : errors) {
+                if (error == null) {
+                    // I don't know what null means
+                   continue;
+                }
+
                 result.push(new JSHintError((NativeObject) error));
             }
         } catch (IOException ex) {
