@@ -43,6 +43,7 @@ public class JSHint {
             for (Object error : errors) {
                 if (error == null) {
                     // I don't know what null means
+                    // I believe it follows js files with "Too many errors."
                    continue;
                 }
 
