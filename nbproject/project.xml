@@ -59,6 +59,10 @@
                 </test-type>
             </test-dependencies>
             <public-packages/>
+            <class-path-extension>
+                <runtime-relative-path>ext/rhino.jar</runtime-relative-path>
+                <binary-origin>release/modules/ext/rhino.jar</binary-origin>
+            </class-path-extension>
         </data>
     </configuration>
 </project>
