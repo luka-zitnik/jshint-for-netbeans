@@ -23,7 +23,7 @@ public class JSHintTest {
         out.write("a;");
         out.close();
 
-        JSHint jshint = new JSHint();
+        JSHint jshint = JSHint.instance;
         LinkedList<JSHintError> errors = jshint.lint(fo);
         JSHintError head = errors.element();
 
@@ -57,7 +57,7 @@ public class JSHintTest {
         configOut.write("{\"curly\":true,\"undef\":true}");
         configOut.close();
 
-        JSHint jshint = new JSHint();
+        JSHint jshint = JSHint.instance;
         LinkedList<JSHintError> errors = jshint.lint(jsFo);
 
         Assert.assertEquals(3, errors.size());

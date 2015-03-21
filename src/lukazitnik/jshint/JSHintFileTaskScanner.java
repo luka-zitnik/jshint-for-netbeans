@@ -33,7 +33,7 @@ public class JSHintFileTaskScanner extends FileTaskScanner {
         }
 
         LinkedList<Task> tasks = new LinkedList<Task>();
-        JSHint jshint = new JSHint();
+        JSHint jshint = JSHint.instance;
 
         for (JSHintError error : jshint.lint(fo)) {
             tasks.add(Task.create(fo, "nb-tasklist-jshint", error.getReason(), error.getLine()));

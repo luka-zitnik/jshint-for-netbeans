@@ -23,16 +23,28 @@ import sun.org.mozilla.javascript.Scriptable;
  */
 public class JSHint {
 
-    public JSHint() {
+    public final static JSHint instance = new JSHint();
+    private Scriptable scope;
+    private Function jshint;
+
+    private JSHint() {
+        Context cx = Context.enter();
+        scope = cx.initStandardObjects();
+
+        try {
+            jshint = evaluateJSHint(cx, scope);
+        } catch (IOException ex) {
+            Exceptions.printStackTrace(ex);
+        } finally {
+            Context.exit();
+        }
     }
 
     public LinkedList<JSHintError> lint(FileObject fo) {
         Context cx = Context.enter();
-        Scriptable scope = cx.initStandardObjects();
         LinkedList<JSHintError> result = new LinkedList<JSHintError>();
 
         try {
-            Function jshint = getJSHint(cx, scope);
             Scriptable config = jsonToScriptable(cx, scope, getConfig(fo));
             Object args[] = {fo.asText(), config};
 
@@ -44,7 +56,7 @@ public class JSHint {
                 if (error == null) {
                     // I don't know what null means
                     // I believe it follows js files with "Too many errors."
-                   continue;
+                    continue;
                 }
 
                 result.push(new JSHintError((NativeObject) error));
@@ -99,7 +111,7 @@ public class JSHint {
         return scriptable;
     }
 
-    private Function getJSHint(Context cx, Scriptable scope) throws IOException {
+    private Function evaluateJSHint(Context cx, Scriptable scope) throws IOException {
         Reader in = getReader();
         cx.evaluateReader(scope, in, "jshint.js", 1, null);
         return (Function) scope.get("JSHINT", scope);
