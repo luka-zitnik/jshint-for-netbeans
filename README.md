@@ -11,8 +11,10 @@ Looks up configuration files the same way [JSHint for npm](https://www.npmjs.com
 [MIT](https://raw.githubusercontent.com/luka-zitnik/jshint-for-netbeans/master/LICENSE), apart from jshint.js, distributed under [JSLint license](https://github.com/jshint/jshint/blob/master/src/jshint.js), and rhino.jar, distributed under [MPL 2.0](https://www.mozilla.org/MPL/).
 
 ## Useful links
+- https://blogs.oracle.com/geertjan/entry/first_experiments_with_the_task
 - http://bits.netbeans.org/dev/javadoc/
 - http://www-archive.mozilla.org/rhino/apidocs/
+- http://jshint.com/docs/
 - https://developer.mozilla.org/en-US/docs/Mozilla/Projects/Rhino/Scopes_and_Contexts
 - http://www.javaworld.com/article/2073352/core-java/simply-singleton.html
 - https://casecurity.org/wp-content/uploads/2013/10/CASC-Code-Signing.pdf
@@ -20,4 +22,3 @@ Looks up configuration files the same way [JSHint for npm](https://www.npmjs.com
 - https://github.com/lomatek/netbeans-jslint
 - http://plugins.netbeans.org/plugin/40893/jslint
 - http://plugins.netbeans.org/plugin/52226/jshint
-- http://jshint.com/docs/
