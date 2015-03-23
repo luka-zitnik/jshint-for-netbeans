@@ -1,6 +1,6 @@
 package lukazitnik.jshint;
 
-import sun.org.mozilla.javascript.NativeObject;
+import org.mozilla.javascript.NativeObject;
 
 /**
  *

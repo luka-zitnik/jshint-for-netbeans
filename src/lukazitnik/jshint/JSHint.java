@@ -11,11 +11,11 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.openide.filesystems.FileObject;
 import org.openide.util.Exceptions;
-import sun.org.mozilla.javascript.Context;
-import sun.org.mozilla.javascript.Function;
-import sun.org.mozilla.javascript.NativeArray;
-import sun.org.mozilla.javascript.NativeObject;
-import sun.org.mozilla.javascript.Scriptable;
+import org.mozilla.javascript.Context;
+import org.mozilla.javascript.Function;
+import org.mozilla.javascript.NativeArray;
+import org.mozilla.javascript.NativeObject;
+import org.mozilla.javascript.Scriptable;
 
 /**
  *
