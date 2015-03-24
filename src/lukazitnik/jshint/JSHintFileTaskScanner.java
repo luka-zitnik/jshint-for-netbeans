@@ -8,10 +8,6 @@ import org.netbeans.spi.tasklist.Task;
 import org.openide.filesystems.FileObject;
 import org.openide.util.NbBundle;
 
-/**
- *
- * @author luka
- */
 public class JSHintFileTaskScanner extends FileTaskScanner {
 
     public JSHintFileTaskScanner(String displayName, String description) {

@@ -17,10 +17,6 @@ import org.mozilla.javascript.NativeArray;
 import org.mozilla.javascript.NativeObject;
 import org.mozilla.javascript.Scriptable;
 
-/**
- *
- * @author luka
- */
 public class JSHint {
 
     public final static JSHint instance = new JSHint();
