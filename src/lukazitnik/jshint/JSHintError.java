@@ -12,7 +12,7 @@ public class JSHintError {
     private final Integer line;
 
     public JSHintError(NativeObject error) {
-        reason = (String) error.get("reason", error);
+        reason = error.get("reason", error).toString();
         line = ((Number) error.get("line", error)).intValue();
     }
 
