@@ -50,8 +50,9 @@ public class JSHint {
 
             for (Object error : errors) {
                 if (error == null) {
-                    // I don't know what null means
-                    // I believe it follows js files with "Too many errors."
+                    // Null is added to the end in case of an "Unrecoverable
+                    // syntax error." or "Too many errors.", so we could break
+                    // out of the loop just as well
                     continue;
                 }
 
