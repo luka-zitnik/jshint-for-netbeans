@@ -1,6 +1,6 @@
 # JSHint for NetBeans
 
-<img align="right" height="256px" src="https://raw.githubusercontent.com/luka-zitnik/jshint-for-netbeans/master/icon.svg">
+<img align="right" height="256px" src="https://cdn.rawgit.com/luka-zitnik/jshint-for-netbeans/1.0/icon.svg">
 
 A plugin for NetBeans IDE.
 
