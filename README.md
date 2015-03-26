@@ -1,4 +1,7 @@
-# jshint-for-netbeans
+# JSHint for NetBeans
+
+<img align="right" height="256px" src="https://raw.githubusercontent.com/luka-zitnik/jshint-for-netbeans/master/icon.svg">
+
 A plugin for NetBeans IDE.
 
 Creates Action Items out of [JSHint](http://jshint.com/) errors.
