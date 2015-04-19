@@ -6,6 +6,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.LinkedList;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -16,6 +18,7 @@ import org.mozilla.javascript.Function;
 import org.mozilla.javascript.NativeArray;
 import org.mozilla.javascript.NativeObject;
 import org.mozilla.javascript.Scriptable;
+import org.netbeans.modules.editor.NbEditorUtilities;
 
 public class JSHint {
 
@@ -36,9 +39,41 @@ public class JSHint {
         }
     }
 
+    public LinkedList<JSHintError> lint(Document d) {
+        Context cx = Context.enter();
+        LinkedList<JSHintError> result = new LinkedList<>();
+        FileObject fo = NbEditorUtilities.getFileObject(d);
+
+        try {
+            Scriptable config = jsonToScriptable(cx, scope, getConfig(fo));
+            Object args[] = {d.getText(0, d.getLength()), config};
+
+            jshint.call(cx, scope, scope, args);
+
+            NativeArray errors = (NativeArray) jshint.get("errors", null);
+
+            for (Object error : errors) {
+                if (error == null) {
+                    // Null is added to the end in case of an "Unrecoverable
+                    // syntax error." or "Too many errors.", so we could break
+                    // out of the loop just as well
+                    continue;
+                }
+
+                result.push(new JSHintError((NativeObject) error));
+            }
+        } catch (IOException | ParseException | BadLocationException ex) {
+            Exceptions.printStackTrace(ex);
+        } finally {
+            Context.exit();
+        }
+
+        return result;
+    }
+
     public LinkedList<JSHintError> lint(FileObject fo) {
         Context cx = Context.enter();
-        LinkedList<JSHintError> result = new LinkedList<JSHintError>();
+        LinkedList<JSHintError> result = new LinkedList<>();
 
         try {
             Scriptable config = jsonToScriptable(cx, scope, getConfig(fo));
@@ -58,9 +93,7 @@ public class JSHint {
 
                 result.push(new JSHintError((NativeObject) error));
             }
-        } catch (IOException ex) {
-            Exceptions.printStackTrace(ex);
-        } catch (ParseException ex) {
+        } catch (IOException | ParseException ex) {
             Exceptions.printStackTrace(ex);
         } finally {
             Context.exit();

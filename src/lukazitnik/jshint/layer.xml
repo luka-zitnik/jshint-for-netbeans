@@ -19,4 +19,11 @@
             </file>
         </folder>
     </folder>
+    <folder name="Editors">
+        <folder name="AnnotationTypes">
+            <file name="lukazitnik-jshint-jshintannotation.xml"
+                  url="JSHintAnnotation.xml">
+            </file>
+        </folder>
+    </folder>
 </filesystem>

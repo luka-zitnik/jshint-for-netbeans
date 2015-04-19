@@ -28,7 +28,7 @@ public class JSHintFileTaskScanner extends FileTaskScanner {
             return Collections.<Task>emptyList();
         }
 
-        LinkedList<Task> tasks = new LinkedList<Task>();
+        LinkedList<Task> tasks = new LinkedList<>();
         JSHint jshint = JSHint.instance;
 
         for (JSHintError error : jshint.lint(fo)) {
