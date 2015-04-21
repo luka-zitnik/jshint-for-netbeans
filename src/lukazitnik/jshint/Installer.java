@@ -2,10 +2,12 @@ package lukazitnik.jshint;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.text.Document;
 import javax.swing.text.JTextComponent;
 import org.netbeans.api.editor.EditorRegistry;
 import org.netbeans.editor.Utilities;
@@ -20,7 +22,7 @@ public class Installer extends ModuleInstall {
     public void restored() {
         PropertyChangeListener pcl = new PropertyChangeListener() {
 
-            private final DocumentListener dl = new DocumentListener() {
+            class MyDocumentListener implements DocumentListener {
 
                 private final LinkedList<JSHintAnnotation> attachedAnnotations = new LinkedList<>();
 
@@ -66,7 +68,9 @@ public class Installer extends ModuleInstall {
                         attachedAnnotations.add(annotation);
                     }
                 }
-            };
+            }
+
+            HashMap<NbEditorDocument, MyDocumentListener> history = new HashMap<>();
 
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
@@ -76,14 +80,34 @@ public class Installer extends ModuleInstall {
                     return;
                 }
 
-                Document d = jtc.getDocument();
+                NbEditorDocument focusedDocument = (NbEditorDocument) jtc.getDocument();
+                MyDocumentListener dl;
 
                 switch (evt.getPropertyName()) {
                     case EditorRegistry.FOCUS_GAINED_PROPERTY:
-                        d.addDocumentListener(dl);
+                        dl = new MyDocumentListener();
+                        if (!history.containsKey(focusedDocument)) {
+                            history.put(focusedDocument, dl);
+                            dl.attachAnnotations(focusedDocument);
+                        }
+                        focusedDocument.addDocumentListener(dl);
                         break;
                     case EditorRegistry.FOCUS_LOST_PROPERTY:
-                        d.removeDocumentListener(dl);
+                        dl = history.get(focusedDocument);
+                        focusedDocument.removeDocumentListener(dl);
+                        break;
+                    case EditorRegistry.COMPONENT_REMOVED_PROPERTY:
+                        List<NbEditorDocument> openedDocuments = new ArrayList<>();
+                        for (JTextComponent component : EditorRegistry.componentList()) {
+                            openedDocuments.add((NbEditorDocument) component.getDocument());
+                        }
+                        for (NbEditorDocument historicalDocuments : history.keySet()) {
+                            if (!openedDocuments.contains(historicalDocuments)) {
+                                dl = history.remove(historicalDocuments);
+                                dl.detachAnnotations(historicalDocuments);
+                                historicalDocuments.removeDocumentListener(dl);
+                            }
+                        }
                         break;
                 }
             }

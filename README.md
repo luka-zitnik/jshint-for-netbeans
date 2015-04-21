@@ -25,3 +25,5 @@ Looks up configuration files the same way [JSHint for npm](https://www.npmjs.com
 - https://github.com/lomatek/netbeans-jslint
 - http://plugins.netbeans.org/plugin/40893/jslint
 - http://plugins.netbeans.org/plugin/52226/jshint
+- http://wiki.netbeans.org/NetBeansDeveloperFAQ
+- http://bits.netbeans.org/dev/javadoc/org-openide-text/org/openide/text/doc-files/api.html
