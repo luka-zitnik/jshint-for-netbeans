@@ -22,7 +22,7 @@ public class Installer extends ModuleInstall {
     public void restored() {
         PropertyChangeListener pcl = new PropertyChangeListener() {
 
-            class MyDocumentListener implements DocumentListener {
+            class JSHintAnnotator implements DocumentListener {
 
                 private final LinkedList<JSHintAnnotation> attachedAnnotations = new LinkedList<>();
 
@@ -70,7 +70,7 @@ public class Installer extends ModuleInstall {
                 }
             }
 
-            HashMap<NbEditorDocument, MyDocumentListener> history = new HashMap<>();
+            HashMap<NbEditorDocument, JSHintAnnotator> history = new HashMap<>();
 
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
@@ -81,20 +81,25 @@ public class Installer extends ModuleInstall {
                 }
 
                 NbEditorDocument focusedDocument = (NbEditorDocument) jtc.getDocument();
-                MyDocumentListener dl;
+
+                if (!NbEditorUtilities.getFileObject(focusedDocument).getMIMEType().equals("text/javascript")) {
+                    return;
+                }
+
+                JSHintAnnotator annotator;
 
                 switch (evt.getPropertyName()) {
                     case EditorRegistry.FOCUS_GAINED_PROPERTY:
-                        dl = new MyDocumentListener();
+                        annotator = new JSHintAnnotator();
                         if (!history.containsKey(focusedDocument)) {
-                            history.put(focusedDocument, dl);
-                            dl.attachAnnotations(focusedDocument);
+                            history.put(focusedDocument, annotator);
+                            annotator.attachAnnotations(focusedDocument);
                         }
-                        focusedDocument.addDocumentListener(dl);
+                        focusedDocument.addDocumentListener(annotator);
                         break;
                     case EditorRegistry.FOCUS_LOST_PROPERTY:
-                        dl = history.get(focusedDocument);
-                        focusedDocument.removeDocumentListener(dl);
+                        annotator = history.get(focusedDocument);
+                        focusedDocument.removeDocumentListener(annotator);
                         break;
                     case EditorRegistry.COMPONENT_REMOVED_PROPERTY:
                         List<NbEditorDocument> openedDocuments = new ArrayList<>();
@@ -103,9 +108,9 @@ public class Installer extends ModuleInstall {
                         }
                         for (NbEditorDocument historicalDocuments : history.keySet()) {
                             if (!openedDocuments.contains(historicalDocuments)) {
-                                dl = history.remove(historicalDocuments);
-                                dl.detachAnnotations(historicalDocuments);
-                                historicalDocuments.removeDocumentListener(dl);
+                                annotator = history.remove(historicalDocuments);
+                                annotator.detachAnnotations(historicalDocuments);
+                                historicalDocuments.removeDocumentListener(annotator);
                             }
                         }
                         break;
