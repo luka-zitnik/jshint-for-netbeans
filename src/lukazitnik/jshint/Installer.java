@@ -122,6 +122,7 @@ public class Installer extends ModuleInstall {
         };
 
         EditorRegistry.addPropertyChangeListener(pcl);
+        JSHint jshint = JSHint.instance;
     }
 
 }
