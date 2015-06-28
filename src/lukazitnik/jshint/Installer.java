@@ -4,6 +4,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import javax.swing.event.DocumentEvent;
@@ -106,11 +107,13 @@ public class Installer extends ModuleInstall {
                         for (JTextComponent component : EditorRegistry.componentList()) {
                             openedDocuments.add((NbEditorDocument) component.getDocument());
                         }
-                        for (NbEditorDocument historicalDocuments : history.keySet()) {
-                            if (!openedDocuments.contains(historicalDocuments)) {
-                                annotator = history.remove(historicalDocuments);
-                                annotator.detachAnnotations(historicalDocuments);
-                                historicalDocuments.removeDocumentListener(annotator);
+                        for (Iterator<NbEditorDocument> it = history.keySet().iterator(); it.hasNext();) {
+                            NbEditorDocument historicalDocument = it.next();
+                            if (!openedDocuments.contains(historicalDocument)) {
+                                annotator = history.get(historicalDocument);
+                                annotator.detachAnnotations(historicalDocument);
+                                historicalDocument.removeDocumentListener(annotator);
+                                it.remove();
                             }
                         }
                         break;
