@@ -5,18 +5,20 @@ import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.text.BadLocationException;
 import javax.swing.text.JTextComponent;
 import org.netbeans.api.editor.EditorRegistry;
+import org.netbeans.editor.AnnotationDesc;
+import org.netbeans.editor.Annotations;
 import org.netbeans.editor.Utilities;
 import org.netbeans.modules.editor.NbEditorDocument;
 import org.netbeans.modules.editor.NbEditorUtilities;
 import org.openide.modules.ModuleInstall;
-import org.openide.text.Line;
+import org.openide.util.Exceptions;
 
 public class Installer extends ModuleInstall {
 
@@ -26,7 +28,6 @@ public class Installer extends ModuleInstall {
 
             class JSHintAnnotator implements DocumentListener {
 
-                private final LinkedList<JSHintAnnotation> attachedAnnotations = new LinkedList<>();
                 private final NbEditorDocument d;
 
                 public JSHintAnnotator(NbEditorDocument d) {
@@ -58,30 +59,38 @@ public class Installer extends ModuleInstall {
 
                             SwingUtilities.invokeLater(new Runnable() {
                                 public void run() {
-                                    detachAnnotations();
-                                    attachAnnotations(errors);
+                                    removeAnnotations();
+                                    addAnnotations(errors);
                                 }
                             });
                         }
 
-                        private void detachAnnotations() {
-                            for (JSHintAnnotation annotation : attachedAnnotations) {
-                                annotation.detach();
+                        private void removeAnnotations() {
+                            Annotations annotations = d.getAnnotations();
+                            for (int line = 0; annotations.getNextLineWithAnnotation(line) != -1;) {
+                                AnnotationDesc annotationDesc = annotations.getAnnotation(line, "lukazitnik-jshint-jshintannotation");
+                                if (annotationDesc == null) {
+                                    ++line;
+                                    continue;
+                                }
+
+                                annotations.removeAnnotation(annotationDesc);
                             }
-                            attachedAnnotations.clear();
                         }
 
-                        private void attachAnnotations(List<JSHintError> errors) {
+                        private void addAnnotations(List<JSHintError> errors) {
                             for (JSHintError error : errors) {
 
                                 // Line indexes start from 0, while line numbers start from 1
                                 Integer offset = Utilities.getRowStartFromLineOffset(d, error.getLine() - 1);
 
-                                Line line = NbEditorUtilities.getLine(d, offset, false);
                                 JSHintAnnotation annotation = new JSHintAnnotation(error);
 
-                                annotation.attach(line);
-                                attachedAnnotations.add(annotation);
+                                try {
+                                    d.addAnnotation(d.createPosition(offset), 0, annotation);
+                                } catch (BadLocationException ex) {
+                                    Exceptions.printStackTrace(ex);
+                                }
                             }
                         }
                     };
