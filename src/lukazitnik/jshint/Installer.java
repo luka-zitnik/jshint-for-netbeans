@@ -28,28 +28,22 @@ public class Installer extends ModuleInstall {
 
             class JSHintAnnotator implements DocumentListener {
 
-                private final NbEditorDocument d;
-
-                public JSHintAnnotator(NbEditorDocument d) {
-                    this.d = d;
-                }
-
                 @Override
                 public void insertUpdate(DocumentEvent de) {
-                    updateAnnotations();
+                    updateAnnotations((NbEditorDocument) de.getDocument());
                 }
 
                 @Override
                 public void removeUpdate(DocumentEvent de) {
-                    updateAnnotations();
+                    updateAnnotations((NbEditorDocument) de.getDocument());
                 }
 
                 @Override
                 public void changedUpdate(DocumentEvent de) {
-                    updateAnnotations();
+                    updateAnnotations((NbEditorDocument) de.getDocument());
                 }
 
-                private void updateAnnotations() {
+                private void updateAnnotations(final NbEditorDocument d) {
                     Thread thread = new Thread() {
 
                         @Override
@@ -99,7 +93,8 @@ public class Installer extends ModuleInstall {
                 }
             }
 
-            HashMap<NbEditorDocument, JSHintAnnotator> history = new HashMap<>();
+            List<NbEditorDocument> history = new ArrayList<>();
+            JSHintAnnotator annotator = new JSHintAnnotator();
 
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
@@ -115,19 +110,15 @@ public class Installer extends ModuleInstall {
                     return;
                 }
 
-                JSHintAnnotator annotator;
-
                 switch (evt.getPropertyName()) {
                     case EditorRegistry.FOCUS_GAINED_PROPERTY:
-                        annotator = new JSHintAnnotator(focusedDocument);
-                        if (!history.containsKey(focusedDocument)) {
-                            history.put(focusedDocument, annotator);
-                            annotator.updateAnnotations();
+                        if (!history.contains(focusedDocument)) {
+                            history.add(focusedDocument);
+                            annotator.updateAnnotations(focusedDocument);
                         }
                         focusedDocument.addDocumentListener(annotator);
                         break;
                     case EditorRegistry.FOCUS_LOST_PROPERTY:
-                        annotator = history.get(focusedDocument);
                         focusedDocument.removeDocumentListener(annotator);
                         break;
                     case EditorRegistry.COMPONENT_REMOVED_PROPERTY:
@@ -135,12 +126,11 @@ public class Installer extends ModuleInstall {
                         for (JTextComponent component : EditorRegistry.componentList()) {
                             openedDocuments.add((NbEditorDocument) component.getDocument());
                         }
-                        Iterator<NbEditorDocument> it = history.keySet().iterator();
+                        Iterator<NbEditorDocument> it = history.iterator();
                         while (it.hasNext()) {
                             NbEditorDocument historicalDocument = it.next();
                             if (!openedDocuments.contains(historicalDocument)) {
-                                annotator = history.get(historicalDocument);
-                                annotator.updateAnnotations();
+                                annotator.updateAnnotations(historicalDocument);
                                 historicalDocument.removeDocumentListener(annotator);
                                 it.remove();
                             }
