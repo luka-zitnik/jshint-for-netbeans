@@ -54,20 +54,28 @@ public class Installer extends ModuleInstall {
                     }
                 }
 
-                private void attachAnnotations(NbEditorDocument d) {
-                    JSHint jshint = JSHint.instance;
+                private void attachAnnotations(final NbEditorDocument d) {
+                    Thread thread = new Thread() {
 
-                    for (JSHintError error : jshint.lint(d)) {
+                        @Override
+                        public void run() {
+                            JSHint jshint = JSHint.instance;
 
-                        // Line indexes start from 0, while line numbers start from 1
-                        Integer offset = Utilities.getRowStartFromLineOffset(d, error.getLine() - 1);
+                            for (JSHintError error : jshint.lint(d)) {
 
-                        Line line = NbEditorUtilities.getLine(d, offset, false);
-                        JSHintAnnotation annotation = new JSHintAnnotation(error);
+                                // Line indexes start from 0, while line numbers start from 1
+                                Integer offset = Utilities.getRowStartFromLineOffset(d, error.getLine() - 1);
 
-                        annotation.attach(line);
-                        attachedAnnotations.add(annotation);
-                    }
+                                Line line = NbEditorUtilities.getLine(d, offset, false);
+                                JSHintAnnotation annotation = new JSHintAnnotation(error);
+
+                                annotation.attach(line);
+                                attachedAnnotations.add(annotation);
+                            }
+                        }
+                    };
+
+                    thread.start();
                 }
             }
 
@@ -122,7 +130,6 @@ public class Installer extends ModuleInstall {
         };
 
         EditorRegistry.addPropertyChangeListener(pcl);
-        JSHint jshint = JSHint.instance;
     }
 
 }
