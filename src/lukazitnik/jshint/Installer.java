@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.JTextComponent;
@@ -26,42 +27,52 @@ public class Installer extends ModuleInstall {
             class JSHintAnnotator implements DocumentListener {
 
                 private final LinkedList<JSHintAnnotation> attachedAnnotations = new LinkedList<>();
+                private final NbEditorDocument d;
+
+                public JSHintAnnotator(NbEditorDocument d) {
+                    this.d = d;
+                }
 
                 @Override
                 public void insertUpdate(DocumentEvent de) {
-                    handleUpdate(de);
+                    updateAnnotations();
                 }
 
                 @Override
                 public void removeUpdate(DocumentEvent de) {
-                    handleUpdate(de);
+                    updateAnnotations();
                 }
 
                 @Override
                 public void changedUpdate(DocumentEvent de) {
-                    handleUpdate(de);
+                    updateAnnotations();
                 }
 
-                private void handleUpdate(DocumentEvent de) {
-                    NbEditorDocument d = (NbEditorDocument) de.getDocument();
-                    detachAnnotations(d);
-                    attachAnnotations(d);
-                }
-
-                private void detachAnnotations(NbEditorDocument d) {
-                    for (JSHintAnnotation annotation : attachedAnnotations) {
-                        annotation.detach();
-                    }
-                }
-
-                private void attachAnnotations(final NbEditorDocument d) {
+                private void updateAnnotations() {
                     Thread thread = new Thread() {
 
                         @Override
                         public void run() {
                             JSHint jshint = JSHint.instance;
+                            final List<JSHintError> errors = jshint.lint(d);
 
-                            for (JSHintError error : jshint.lint(d)) {
+                            SwingUtilities.invokeLater(new Runnable() {
+                                public void run() {
+                                    detachAnnotations();
+                                    attachAnnotations(errors);
+                                }
+                            });
+                        }
+
+                        private void detachAnnotations() {
+                            for (JSHintAnnotation annotation : attachedAnnotations) {
+                                annotation.detach();
+                            }
+                            attachedAnnotations.clear();
+                        }
+
+                        private void attachAnnotations(List<JSHintError> errors) {
+                            for (JSHintError error : errors) {
 
                                 // Line indexes start from 0, while line numbers start from 1
                                 Integer offset = Utilities.getRowStartFromLineOffset(d, error.getLine() - 1);
@@ -99,10 +110,10 @@ public class Installer extends ModuleInstall {
 
                 switch (evt.getPropertyName()) {
                     case EditorRegistry.FOCUS_GAINED_PROPERTY:
-                        annotator = new JSHintAnnotator();
+                        annotator = new JSHintAnnotator(focusedDocument);
                         if (!history.containsKey(focusedDocument)) {
                             history.put(focusedDocument, annotator);
-                            annotator.attachAnnotations(focusedDocument);
+                            annotator.updateAnnotations();
                         }
                         focusedDocument.addDocumentListener(annotator);
                         break;
@@ -115,11 +126,12 @@ public class Installer extends ModuleInstall {
                         for (JTextComponent component : EditorRegistry.componentList()) {
                             openedDocuments.add((NbEditorDocument) component.getDocument());
                         }
-                        for (Iterator<NbEditorDocument> it = history.keySet().iterator(); it.hasNext();) {
+                        Iterator<NbEditorDocument> it = history.keySet().iterator();
+                        while (it.hasNext()) {
                             NbEditorDocument historicalDocument = it.next();
                             if (!openedDocuments.contains(historicalDocument)) {
                                 annotator = history.get(historicalDocument);
-                                annotator.detachAnnotations(historicalDocument);
+                                annotator.updateAnnotations();
                                 historicalDocument.removeDocumentListener(annotator);
                                 it.remove();
                             }

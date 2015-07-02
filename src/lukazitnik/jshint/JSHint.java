@@ -39,7 +39,7 @@ public class JSHint {
         }
     }
 
-    public LinkedList<JSHintError> lint(Document d) {
+    public synchronized LinkedList<JSHintError> lint(Document d) {
         Context cx = Context.enter();
         LinkedList<JSHintError> result = new LinkedList<>();
         FileObject fo = NbEditorUtilities.getFileObject(d);
