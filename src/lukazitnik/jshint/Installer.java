@@ -3,7 +3,6 @@ package lukazitnik.jshint;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import javax.swing.SwingUtilities;
@@ -61,9 +60,15 @@ public class Installer extends ModuleInstall {
 
                         private void removeAnnotations() {
                             Annotations annotations = d.getAnnotations();
+
+                            // getNextLineWithAnnotation seems to return its argument
+                            // as long as there are annotations on that line
                             for (int line = 0; annotations.getNextLineWithAnnotation(line) != -1;) {
                                 AnnotationDesc annotationDesc = annotations.getAnnotation(line, "lukazitnik-jshint-jshintannotation");
                                 if (annotationDesc == null) {
+                                    // The only way to get to the next line with annotations
+                                    // while leaving some annotations on the current line
+                                    // is to go to the next line, with or without annotations
                                     ++line;
                                     continue;
                                 }
@@ -83,7 +88,8 @@ public class Installer extends ModuleInstall {
                                 try {
                                     d.addAnnotation(d.createPosition(offset), 0, annotation);
                                 } catch (BadLocationException ex) {
-                                    Exceptions.printStackTrace(ex);
+                                    // Document changed in the meantime. Do nothing.
+                                    // Another update to annotations should follow.
                                 }
                             }
                         }
