@@ -6,7 +6,7 @@ A plugin for NetBeans IDE.
 
 Creates Action Items out of [JSHint](http://jshint.com/) errors.
 
-Acquires JSHint errors by linting files that end with ".js" with an embedded version of JSHint against configuration files, named .jshintrc.
+Acquires JSHint errors by linting JavaScript files with an embedded version of JSHint against configuration files, named .jshintrc.
 
 Looks up configuration files the same way [JSHint for npm](https://www.npmjs.com/package/jshint) does it, by running recursive searches from the directory of the actual JS file and up to the filesystem root.
 
