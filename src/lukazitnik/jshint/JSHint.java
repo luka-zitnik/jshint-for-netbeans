@@ -39,6 +39,9 @@ public class JSHint {
         }
     }
 
+    // Async executions of this method cause org.mozilla.javascript.JavaScriptException:
+    // TypeError: Cannot read property "id" from null (jshint.js#12315) and similar.
+    // Maybe it would be cheaper to have multiple instances of this class.
     public synchronized LinkedList<JSHintError> lint(Document d) {
         Context cx = Context.enter();
         LinkedList<JSHintError> result = new LinkedList<>();

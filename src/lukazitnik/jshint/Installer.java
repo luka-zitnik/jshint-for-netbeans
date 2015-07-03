@@ -17,7 +17,6 @@ import org.netbeans.editor.Utilities;
 import org.netbeans.modules.editor.NbEditorDocument;
 import org.netbeans.modules.editor.NbEditorUtilities;
 import org.openide.modules.ModuleInstall;
-import org.openide.util.Exceptions;
 
 public class Installer extends ModuleInstall {
 
