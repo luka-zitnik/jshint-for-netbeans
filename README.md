@@ -27,3 +27,4 @@ Looks up configuration files the same way [JSHint for npm](https://www.npmjs.com
 - http://plugins.netbeans.org/plugin/52226/jshint
 - http://wiki.netbeans.org/NetBeansDeveloperFAQ
 - http://bits.netbeans.org/dev/javadoc/org-openide-text/org/openide/text/doc-files/api.html
+- http://javamex.com/tutorials/threads/invokelater.shtml
