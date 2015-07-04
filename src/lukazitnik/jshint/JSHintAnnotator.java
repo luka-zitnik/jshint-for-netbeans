@@ -1,5 +1,6 @@
 package lukazitnik.jshint;
 
+import com.nadeausoftware.ThreadUtilities;
 import java.util.List;
 import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
@@ -31,6 +32,12 @@ class JSHintAnnotator implements DocumentListener {
     }
 
     protected void updateAnnotations(final NbEditorDocument d) {
+        String path = NbEditorUtilities.getFileObject(d).getPath();
+
+        if (ThreadUtilities.getThread(path) != null) {
+            return;
+        }
+
         Thread thread = new Thread() {
 
             @Override
@@ -89,6 +96,7 @@ class JSHintAnnotator implements DocumentListener {
             }
         };
 
+        thread.setName(path);
         thread.start();
     }
 }
