@@ -39,10 +39,7 @@ public class JSHint {
         }
     }
 
-    // Async executions of this method cause org.mozilla.javascript.JavaScriptException:
-    // TypeError: Cannot read property "id" from null (jshint.js#12315) and similar.
-    // Maybe it would be cheaper to have multiple instances of this class.
-    public synchronized LinkedList<JSHintError> lint(Document d) {
+    public LinkedList<JSHintError> lint(Document d) {
         Context cx = Context.enter();
         LinkedList<JSHintError> result = new LinkedList<>();
         FileObject fo = NbEditorUtilities.getFileObject(d);
@@ -50,10 +47,7 @@ public class JSHint {
         try {
             Scriptable config = jsonToScriptable(cx, scope, getConfig(fo));
             Object args[] = {d.getText(0, d.getLength()), config};
-
-            jshint.call(cx, scope, scope, args);
-
-            NativeArray errors = (NativeArray) jshint.get("errors", null);
+            NativeArray errors = callJSHint(cx, args);
 
             for (Object error : errors) {
                 if (error == null) {
@@ -81,10 +75,7 @@ public class JSHint {
         try {
             Scriptable config = jsonToScriptable(cx, scope, getConfig(fo));
             Object args[] = {fo.asText(), config};
-
-            jshint.call(cx, scope, scope, args);
-
-            NativeArray errors = (NativeArray) jshint.get("errors", null);
+            NativeArray errors = callJSHint(cx, args);
 
             for (Object error : errors) {
                 if (error == null) {
@@ -157,5 +148,13 @@ public class JSHint {
         InputStream stream = getClass().getResourceAsStream("jshint.js");
 
         return new BufferedReader(new InputStreamReader(stream));
+    }
+
+    // Async executions of this method cause org.mozilla.javascript.JavaScriptException:
+    // TypeError: Cannot read property "id" from null (jshint.js#12315) and similar.
+    // Maybe it would be cheaper to have multiple instances of this class.
+    private synchronized NativeArray callJSHint(Context cx, Object[] args) {
+        jshint.call(cx, scope, scope, args);
+        return (NativeArray) jshint.get("errors", null);
     }
 }
