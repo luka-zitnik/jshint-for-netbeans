@@ -66,15 +66,14 @@ class JSHintAnnotator implements DocumentListener {
             private void removeAnnotations() {
                 Annotations annotations = d.getAnnotations();
 
-                // getNextLineWithAnnotation seems to return its argument
-                // as long as there are annotations on that line
-                for (int line = 0; annotations.getNextLineWithAnnotation(line) != -1;) {
+                for (int line = 0; line != -1;) {
                     AnnotationDesc annotationDesc = annotations.getAnnotation(line, "lukazitnik-jshint-jshintannotation");
+
                     if (annotationDesc == null) {
-                        // The only way to get to the next line with annotations
-                        // while leaving some annotations on the current line
-                        // is to go to the next line, with or without annotations
-                        ++line;
+                        // getNextLineWithAnnotation seems to return its argument
+                        // as long as there are annotations on that line.
+                        // So, we need to increment the number ourselves
+                        line = annotations.getNextLineWithAnnotation(++line);
                         continue;
                     }
 
