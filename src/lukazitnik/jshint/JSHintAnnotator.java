@@ -13,6 +13,7 @@ import org.netbeans.editor.Annotations;
 import org.netbeans.editor.Utilities;
 import org.netbeans.modules.editor.NbEditorDocument;
 import org.netbeans.modules.editor.NbEditorUtilities;
+import org.openide.filesystems.FileObject;
 
 class JSHintAnnotator implements DocumentListener {
 
@@ -32,18 +33,21 @@ class JSHintAnnotator implements DocumentListener {
     }
 
     protected void updateAnnotations(final NbEditorDocument d) {
-        String path = NbEditorUtilities.getFileObject(d).getPath();
+        FileObject fo = NbEditorUtilities.getFileObject(d);
+        String path = fo.getPath();
+        String fileName = fo.getNameExt();
+        final ProgressHandle progressHandle = ProgressHandleFactory.createHandle("Linting " + fileName);
 
-        if (ThreadUtilities.getThread(path) != null) {
-            return;
+        try {
+            ThreadUtilities.getThread(path).interrupt();
+        } catch (NullPointerException ex) {
+            // No linthing thread is running for the same file
         }
 
-        Thread thread = new Thread() {
+        final Thread lintingThread = new Thread() {
 
             @Override
             public void run() {
-                String fileName = NbEditorUtilities.getFileObject(d).getNameExt();
-                ProgressHandle progressHandle = ProgressHandleFactory.createHandle("Linting " + fileName);
                 progressHandle.start();
 
                 JSHint jshint = JSHint.instance;
@@ -96,7 +100,23 @@ class JSHintAnnotator implements DocumentListener {
             }
         };
 
-        thread.setName(path);
-        thread.start();
+        Thread stateCheckingThread = new Thread() {
+
+            @Override
+            public void run() {
+                while (lintingThread.isAlive()) {
+                    if (lintingThread.isInterrupted()) {
+                        progressHandle.finish(); // Its sole purpose
+                        lintingThread.stop();
+                        return;
+                    }
+                }
+            }
+        };
+
+        lintingThread.setName(path);
+        lintingThread.start();
+        stateCheckingThread.setName("Linting Thread Monitor");
+        stateCheckingThread.start();
     }
 }
