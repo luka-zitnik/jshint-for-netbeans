@@ -5,6 +5,8 @@ import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import javax.swing.event.UndoableEditEvent;
+import javax.swing.event.UndoableEditListener;
 import javax.swing.text.JTextComponent;
 import org.netbeans.api.editor.EditorRegistry;
 import org.netbeans.modules.editor.NbEditorDocument;
@@ -28,7 +30,7 @@ public class Installer extends ModuleInstall {
                     return;
                 }
 
-                NbEditorDocument focusedDocument = (NbEditorDocument) jtc.getDocument();
+                final NbEditorDocument focusedDocument = (NbEditorDocument) jtc.getDocument();
 
                 if (!NbEditorUtilities.getFileObject(focusedDocument).getMIMEType().equals("text/javascript")) {
                     return;
@@ -41,6 +43,13 @@ public class Installer extends ModuleInstall {
 
                             // The file has just been opened, so ...
                             annotator.updateAnnotations(focusedDocument);
+                            focusedDocument.addUndoableEditListener(new UndoableEditListener() {
+
+                                @Override
+                                public void undoableEditHappened(UndoableEditEvent uee) {
+                                    annotator.updateAnnotations(focusedDocument);
+                                }
+                            });
                         }
                         focusedDocument.addDocumentListener(annotator);
                         break;
