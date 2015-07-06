@@ -38,6 +38,8 @@ public class Installer extends ModuleInstall {
                     case EditorRegistry.FOCUS_GAINED_PROPERTY:
                         if (!history.contains(focusedDocument)) {
                             history.add(focusedDocument);
+
+                            // The file has just been opened, so ...
                             annotator.updateAnnotations(focusedDocument);
                         }
                         focusedDocument.addDocumentListener(annotator);
@@ -46,6 +48,8 @@ public class Installer extends ModuleInstall {
                         focusedDocument.removeDocumentListener(annotator);
                         break;
                     case EditorRegistry.COMPONENT_REMOVED_PROPERTY:
+
+                        // Clean up history
                         List<NbEditorDocument> openedDocuments = new ArrayList<>();
                         for (JTextComponent component : EditorRegistry.componentList()) {
                             openedDocuments.add((NbEditorDocument) component.getDocument());
@@ -54,7 +58,6 @@ public class Installer extends ModuleInstall {
                         while (it.hasNext()) {
                             NbEditorDocument historicalDocument = it.next();
                             if (!openedDocuments.contains(historicalDocument)) {
-                                annotator.updateAnnotations(historicalDocument);
                                 historicalDocument.removeDocumentListener(annotator);
                                 it.remove();
                             }
