@@ -43,18 +43,8 @@ public class Installer extends ModuleInstall {
 
                             // The file has just been opened, so ...
                             annotator.updateAnnotations(focusedDocument);
-                            focusedDocument.addUndoableEditListener(new UndoableEditListener() {
-
-                                @Override
-                                public void undoableEditHappened(UndoableEditEvent uee) {
-                                    annotator.updateAnnotations(focusedDocument);
-                                }
-                            });
+                            focusedDocument.addDocumentListener(annotator);
                         }
-                        focusedDocument.addDocumentListener(annotator);
-                        break;
-                    case EditorRegistry.FOCUS_LOST_PROPERTY:
-                        focusedDocument.removeDocumentListener(annotator);
                         break;
                     case EditorRegistry.COMPONENT_REMOVED_PROPERTY:
 
