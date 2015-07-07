@@ -99,17 +99,20 @@ class JSHintAnnotator implements DocumentListener {
             }
         };
 
+        // Closes related progress indicator
         Thread stateCheckingThread = new Thread() {
 
             @Override
             public void run() {
                 while (lintingThread.isAlive()) {
                     if (lintingThread.isInterrupted()) {
-                        progressHandle.finish(); // Its sole purpose
+                        progressHandle.finish();
                         lintingThread.stop();
                         return;
                     }
                 }
+
+                progressHandle.finish();
             }
         };
 
