@@ -18,7 +18,6 @@ public class Installer extends ModuleInstall {
         PropertyChangeListener pcl = new PropertyChangeListener() {
 
             List<NbEditorDocument> history = new ArrayList<>();
-            JSHintAnnotator annotator = new JSHintAnnotator();
 
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
@@ -40,6 +39,7 @@ public class Installer extends ModuleInstall {
                             history.add(focusedDocument);
 
                             // The file has just been opened, so ...
+                            JSHintAnnotator annotator = new JSHintAnnotator();
                             annotator.updateAnnotations(focusedDocument);
                             focusedDocument.addDocumentListener(annotator);
                         }
@@ -55,7 +55,6 @@ public class Installer extends ModuleInstall {
                         while (it.hasNext()) {
                             NbEditorDocument historicalDocument = it.next();
                             if (!openedDocuments.contains(historicalDocument)) {
-                                historicalDocument.removeDocumentListener(annotator);
                                 it.remove();
                             }
                         }

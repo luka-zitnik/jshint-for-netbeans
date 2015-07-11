@@ -1,6 +1,5 @@
 package lukazitnik.jshint;
 
-import com.nadeausoftware.ThreadUtilities;
 import java.util.List;
 import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
@@ -13,9 +12,11 @@ import org.netbeans.editor.Annotations;
 import org.netbeans.editor.Utilities;
 import org.netbeans.modules.editor.NbEditorDocument;
 import org.netbeans.modules.editor.NbEditorUtilities;
-import org.openide.filesystems.FileObject;
 
 class JSHintAnnotator implements DocumentListener {
+
+    private Thread lintingThread;
+    private ProgressHandle progressHandle;
 
     @Override
     public void insertUpdate(DocumentEvent de) {
@@ -33,18 +34,15 @@ class JSHintAnnotator implements DocumentListener {
     }
 
     protected void updateAnnotations(final NbEditorDocument d) {
-        FileObject fo = NbEditorUtilities.getFileObject(d);
-        String path = fo.getPath();
-        String fileName = fo.getNameExt();
-        final ProgressHandle progressHandle = ProgressHandleFactory.createHandle("Linting " + fileName);
+        String fileName = NbEditorUtilities.getFileObject(d).getNameExt();
 
-        try {
-            ThreadUtilities.getThread(path).interrupt();
-        } catch (NullPointerException ex) {
-            // No linthing thread is running for the same file
+        if (lintingThread != null && lintingThread.isAlive()) {
+            progressHandle.finish();
+            lintingThread.stop();
         }
 
-        final Thread lintingThread = new Thread() {
+        progressHandle = ProgressHandleFactory.createHandle("Linting " + fileName);
+        lintingThread = new Thread("Linting Thread") {
 
             @Override
             public void run() {
@@ -99,26 +97,6 @@ class JSHintAnnotator implements DocumentListener {
             }
         };
 
-        // Closes related progress indicator
-        Thread stateCheckingThread = new Thread() {
-
-            @Override
-            public void run() {
-                while (lintingThread.isAlive()) {
-                    if (lintingThread.isInterrupted()) {
-                        progressHandle.finish();
-                        lintingThread.stop();
-                        return;
-                    }
-                }
-
-                progressHandle.finish();
-            }
-        };
-
-        lintingThread.setName(path);
         lintingThread.start();
-        stateCheckingThread.setName("Linting Thread Monitor");
-        stateCheckingThread.start();
     }
 }
