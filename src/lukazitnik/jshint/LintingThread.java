@@ -15,7 +15,7 @@ public class LintingThread extends Thread {
 
     public LintingThread(NbEditorDocument d) {
         this.d = d;
-        this.setName("Linting Thread");
+        this.setName(getClass().getName());
         String fileName = NbEditorUtilities.getFileObject(d).getNameExt();
         progressHandle = ProgressHandleFactory.createHandle("Linting " + fileName, new Cancellable() {
 
