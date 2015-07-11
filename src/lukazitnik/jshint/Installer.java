@@ -39,9 +39,9 @@ public class Installer extends ModuleInstall {
                             history.add(focusedDocument);
 
                             // The file has just been opened, so ...
-                            JSHintAnnotator annotator = new JSHintAnnotator();
-                            annotator.updateAnnotations(focusedDocument);
-                            focusedDocument.addDocumentListener(annotator);
+                            JSHintDocumentListener dl = new JSHintDocumentListener();
+                            dl.updateAnnotations(focusedDocument);
+                            focusedDocument.addDocumentListener(dl);
                         }
                         break;
                     case EditorRegistry.COMPONENT_REMOVED_PROPERTY:
