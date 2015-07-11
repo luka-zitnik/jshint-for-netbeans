@@ -40,7 +40,14 @@ public class LintingThread extends Thread {
     }
 
     public void stopAndFinishProgressHandle() {
+
+        // Shouldn't be a problem, only errors property of the JS function changes.
+        // If this turns out to be wrong, RequestProcessor.Task.cancel() can be used
+        // instead, though that would incur poorer performance -- cancel() would
+        // remove not yet running tasks from the queue, but the running task would
+        // have to finish if it's interruption cannot be handled.
         stop();
+
         progressHandle.finish();
     }
 }
