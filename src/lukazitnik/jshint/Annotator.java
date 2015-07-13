@@ -1,6 +1,9 @@
 package lukazitnik.jshint;
 
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import javax.swing.text.BadLocationException;
 import org.netbeans.editor.AnnotationDesc;
 import org.netbeans.editor.Annotations;
@@ -42,12 +45,14 @@ public class Annotator implements Runnable {
     }
 
     private void addAnnotations(List<JSHintError> errors) {
-        for (JSHintError error : errors) {
+        Map<Integer, List<JSHintError>> chunks = splitIntoChunks(errors);
+
+        for (Integer line : chunks.keySet()) {
 
             // Line indexes start from 0, while line numbers start from 1
-            Integer offset = Utilities.getRowStartFromLineOffset(d, error.getLine() - 1);
+            Integer offset = Utilities.getRowStartFromLineOffset(d, line - 1);
 
-            JSHintAnnotation annotation = new JSHintAnnotation(error);
+            JSHintAnnotation annotation = new JSHintAnnotation(chunks.get(line));
 
             try {
                 d.addAnnotation(d.createPosition(offset), 0, annotation);
@@ -56,5 +61,22 @@ public class Annotator implements Runnable {
                 // Another update to annotations should follow.
             }
         }
+    }
+
+    private Map<Integer, List<JSHintError>> splitIntoChunks(List<JSHintError> errors) {
+        Map<Integer, List<JSHintError>> chunks = new HashMap<>();
+
+        for (JSHintError error : errors) {
+
+            if (chunks.containsKey(error.getLine())) {
+                chunks.get(error.getLine()).add(error);
+            } else {
+                List<JSHintError> newChunk = new LinkedList<>();
+                newChunk.add(error);
+                chunks.put(error.getLine(), newChunk);
+            }
+        }
+
+        return chunks;
     }
 }
