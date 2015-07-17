@@ -88,6 +88,9 @@
               <ResourceString bundle="lukazitnik/jshint/Bundle.properties" key="JSHintPanel.defaultJSFileButton.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
             </Property>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="defaultJSFileButtonActionPerformed"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JButton" name="browseForJSFileButton">
           <Properties>

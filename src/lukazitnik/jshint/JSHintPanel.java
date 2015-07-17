@@ -5,6 +5,7 @@ import org.openide.util.NbPreferences;
 final class JSHintPanel extends javax.swing.JPanel {
 
     private final JSHintOptionsPanelController controller;
+    private final String defaultJSFile = getClass().getResource("jshint.js").getPath();
 
     JSHintPanel(JSHintOptionsPanelController controller) {
         this.controller = controller;
@@ -33,6 +34,11 @@ final class JSHintPanel extends javax.swing.JPanel {
         jSFileTextField.setText(org.openide.util.NbBundle.getMessage(JSHintPanel.class, "JSHintPanel.jSFileTextField.text")); // NOI18N
 
         org.openide.awt.Mnemonics.setLocalizedText(defaultJSFileButton, org.openide.util.NbBundle.getMessage(JSHintPanel.class, "JSHintPanel.defaultJSFileButton.text")); // NOI18N
+        defaultJSFileButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                defaultJSFileButtonActionPerformed(evt);
+            }
+        });
 
         org.openide.awt.Mnemonics.setLocalizedText(browseForJSFileButton, org.openide.util.NbBundle.getMessage(JSHintPanel.class, "JSHintPanel.browseForJSFileButton.text")); // NOI18N
 
@@ -77,8 +83,12 @@ final class JSHintPanel extends javax.swing.JPanel {
         );
     }// </editor-fold>//GEN-END:initComponents
 
+    private void defaultJSFileButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_defaultJSFileButtonActionPerformed
+        jSFileTextField.setText(defaultJSFile);
+    }//GEN-LAST:event_defaultJSFileButtonActionPerformed
+
     void load() {
-         jSFileTextField.setText(NbPreferences.forModule(JSHintPanel.class).get("jshint.js", "default path"));
+         jSFileTextField.setText(NbPreferences.forModule(JSHintPanel.class).get("jshint.js", defaultJSFile));
     }
 
     void store() {
