@@ -4,7 +4,10 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.Reader;
+import javax.swing.InputVerifier;
+import javax.swing.JComponent;
 import javax.swing.JFileChooser;
+import javax.swing.JTextField;
 import javax.swing.filechooser.FileFilter;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Scriptable;
@@ -27,17 +30,20 @@ final class JSHintPanel extends javax.swing.JPanel {
         }
     }
 
-    class JSHintFileValidator {
+    class JSHintFileVerifier extends InputVerifier {
 
         private final Scriptable scope;
 
-        JSHintFileValidator() {
+        JSHintFileVerifier() {
             Context cx = Context.enter();
             scope = cx.initStandardObjects();
             Context.exit();
         }
 
-        boolean valid(File file) {
+        @Override
+        public boolean verify(JComponent jc) {
+            File file = new File(((JTextField)jc).getText());
+
             try {
                 Reader in = new BufferedReader(new FileReader(file));
                 Context cx = Context.enter();
@@ -51,7 +57,6 @@ final class JSHintPanel extends javax.swing.JPanel {
     }
 
     private final JSHintOptionsPanelController controller;
-    private final JSHintFileValidator jSHintFileValidator = new JSHintFileValidator();
     private final String defaultJSFile = InstalledFileLocator.getDefault().locate("jshint.js", "lukazitnik.jshint", false).getPath();
 
     JSHintPanel(JSHintOptionsPanelController controller) {
@@ -83,6 +88,7 @@ final class JSHintPanel extends javax.swing.JPanel {
         org.openide.awt.Mnemonics.setLocalizedText(jSFileLabel, org.openide.util.NbBundle.getMessage(JSHintPanel.class, "JSHintPanel.jSFileLabel.text")); // NOI18N
 
         jSFileTextField.setText(org.openide.util.NbBundle.getMessage(JSHintPanel.class, "JSHintPanel.jSFileTextField.text")); // NOI18N
+        jSFileTextField.setInputVerifier(new JSHintFileVerifier());
 
         org.openide.awt.Mnemonics.setLocalizedText(defaultJSFileButton, org.openide.util.NbBundle.getMessage(JSHintPanel.class, "JSHintPanel.defaultJSFileButton.text")); // NOI18N
         defaultJSFileButton.addActionListener(new java.awt.event.ActionListener() {
@@ -128,7 +134,7 @@ final class JSHintPanel extends javax.swing.JPanel {
                     .addComponent(browseForJSFileButton))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jSFileInfo)
-                .addContainerGap(18, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -153,8 +159,7 @@ final class JSHintPanel extends javax.swing.JPanel {
     }
 
     boolean valid() {
-        File file = new File(jSFileTextField.getText());
-        return jSHintFileValidator.valid(file);
+        return true;
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
