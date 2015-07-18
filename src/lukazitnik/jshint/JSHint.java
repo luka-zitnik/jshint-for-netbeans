@@ -1,9 +1,9 @@
 package lukazitnik.jshint;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.LinkedList;
 import javax.swing.text.BadLocationException;
@@ -19,6 +19,7 @@ import org.mozilla.javascript.NativeArray;
 import org.mozilla.javascript.NativeObject;
 import org.mozilla.javascript.Scriptable;
 import org.netbeans.modules.editor.NbEditorUtilities;
+import org.openide.modules.InstalledFileLocator;
 
 public class JSHint {
 
@@ -145,9 +146,9 @@ public class JSHint {
 
         // jshint.js is the web bundle of the JSHint, downloaded from
         // https://raw.githubusercontent.com/jshint/jshint/master/dist/jshint.js
-        InputStream stream = getClass().getResourceAsStream("jshint.js");
+        File file = InstalledFileLocator.getDefault().locate("jshint.js", "lukazitnik.jshint", false);
 
-        return new BufferedReader(new InputStreamReader(stream));
+        return new BufferedReader(new FileReader(file));
     }
 
     // Async executions of this method cause org.mozilla.javascript.JavaScriptException:

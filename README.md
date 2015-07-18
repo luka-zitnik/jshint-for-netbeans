@@ -28,3 +28,4 @@ Looks up configuration files the same way [JSHint for npm](https://www.npmjs.com
 - http://wiki.netbeans.org/NetBeansDeveloperFAQ
 - http://bits.netbeans.org/dev/javadoc/org-openide-text/org/openide/text/doc-files/api.html
 - http://javamex.com/tutorials/threads/invokelater.shtml
+- http://wiki.netbeans.org/DevFaqInstalledFileLocator
