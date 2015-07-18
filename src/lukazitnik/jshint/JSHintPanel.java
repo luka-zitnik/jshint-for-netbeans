@@ -1,5 +1,7 @@
 package lukazitnik.jshint;
 
+import java.io.File;
+import javax.swing.JFileChooser;
 import org.openide.modules.InstalledFileLocator;
 import org.openide.util.NbPreferences;
 
@@ -22,6 +24,7 @@ final class JSHintPanel extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        fileChooser = new javax.swing.JFileChooser();
         optionsPanel = new javax.swing.JPanel();
         jSFileLabel = new javax.swing.JLabel();
         jSFileTextField = new javax.swing.JTextField();
@@ -42,6 +45,11 @@ final class JSHintPanel extends javax.swing.JPanel {
         });
 
         org.openide.awt.Mnemonics.setLocalizedText(browseForJSFileButton, org.openide.util.NbBundle.getMessage(JSHintPanel.class, "JSHintPanel.browseForJSFileButton.text")); // NOI18N
+        browseForJSFileButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                browseForJSFileButtonActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout optionsPanelLayout = new javax.swing.GroupLayout(optionsPanel);
         optionsPanel.setLayout(optionsPanelLayout);
@@ -88,6 +96,14 @@ final class JSHintPanel extends javax.swing.JPanel {
         jSFileTextField.setText(defaultJSFile);
     }//GEN-LAST:event_defaultJSFileButtonActionPerformed
 
+    private void browseForJSFileButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_browseForJSFileButtonActionPerformed
+        int returnVal = fileChooser.showOpenDialog(this);
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+            File file = fileChooser.getSelectedFile();
+            jSFileTextField.setText(file.getPath());
+        }
+    }//GEN-LAST:event_browseForJSFileButtonActionPerformed
+
     void load() {
          jSFileTextField.setText(NbPreferences.forModule(JSHintPanel.class).get("jshint.js", defaultJSFile));
     }
@@ -104,6 +120,7 @@ final class JSHintPanel extends javax.swing.JPanel {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton browseForJSFileButton;
     private javax.swing.JButton defaultJSFileButton;
+    private javax.swing.JFileChooser fileChooser;
     private javax.swing.JLabel jSFileLabel;
     private javax.swing.JTextField jSFileTextField;
     private javax.swing.JPanel optionsPanel;
