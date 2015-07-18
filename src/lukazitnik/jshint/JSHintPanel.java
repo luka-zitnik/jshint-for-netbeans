@@ -2,10 +2,25 @@ package lukazitnik.jshint;
 
 import java.io.File;
 import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileFilter;
+import org.openide.filesystems.FileUtil;
 import org.openide.modules.InstalledFileLocator;
 import org.openide.util.NbPreferences;
 
 final class JSHintPanel extends javax.swing.JPanel {
+
+    class JSFilesOnlyFilter extends FileFilter {
+
+        @Override
+        public boolean accept(File file) {
+            return file.isDirectory() || FileUtil.toFileObject(file).getMIMEType().equals("text/javascript");
+        }
+
+        @Override
+        public String getDescription() {
+            return "JavaScript Files";
+        }
+    }
 
     private final JSHintOptionsPanelController controller;
     private final String defaultJSFile = InstalledFileLocator.getDefault().locate("jshint.js", "lukazitnik.jshint", false).getPath();
@@ -30,6 +45,9 @@ final class JSHintPanel extends javax.swing.JPanel {
         jSFileTextField = new javax.swing.JTextField();
         defaultJSFileButton = new javax.swing.JButton();
         browseForJSFileButton = new javax.swing.JButton();
+
+        fileChooser.setDialogTitle(org.openide.util.NbBundle.getMessage(JSHintPanel.class, "JSHintPanel.fileChooser.dialogTitle")); // NOI18N
+        fileChooser.setFileFilter(new JSFilesOnlyFilter());
 
         setPreferredSize(new java.awt.Dimension(600, 58));
 
