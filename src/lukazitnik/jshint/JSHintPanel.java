@@ -1,8 +1,13 @@
 package lukazitnik.jshint;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
+import java.io.Reader;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
+import org.mozilla.javascript.Context;
+import org.mozilla.javascript.Scriptable;
 import org.openide.filesystems.FileUtil;
 import org.openide.modules.InstalledFileLocator;
 import org.openide.util.NbPreferences;
@@ -22,7 +27,31 @@ final class JSHintPanel extends javax.swing.JPanel {
         }
     }
 
+    class JSHintFileValidator {
+
+        private final Scriptable scope;
+
+        JSHintFileValidator() {
+            Context cx = Context.enter();
+            scope = cx.initStandardObjects();
+            Context.exit();
+        }
+
+        boolean valid(File file) {
+            try {
+                Reader in = new BufferedReader(new FileReader(file));
+                Context cx = Context.enter();
+                cx.evaluateReader(scope, in, "jshint.js", 1, null);
+            } catch (Exception ex) {
+                return false;
+            }
+
+            return scope.has("JSHINT", scope) != false;
+        }
+    }
+
     private final JSHintOptionsPanelController controller;
+    private final JSHintFileValidator jSHintFileValidator = new JSHintFileValidator();
     private final String defaultJSFile = InstalledFileLocator.getDefault().locate("jshint.js", "lukazitnik.jshint", false).getPath();
 
     JSHintPanel(JSHintOptionsPanelController controller) {
@@ -45,6 +74,7 @@ final class JSHintPanel extends javax.swing.JPanel {
         jSFileTextField = new javax.swing.JTextField();
         defaultJSFileButton = new javax.swing.JButton();
         browseForJSFileButton = new javax.swing.JButton();
+        jSFileInfo = new javax.swing.JLabel();
 
         fileChooser.setDialogTitle(org.openide.util.NbBundle.getMessage(JSHintPanel.class, "JSHintPanel.fileChooser.dialogTitle")); // NOI18N
         fileChooser.setFileFilter(new JSFilesOnlyFilter());
@@ -69,6 +99,8 @@ final class JSHintPanel extends javax.swing.JPanel {
             }
         });
 
+        org.openide.awt.Mnemonics.setLocalizedText(jSFileInfo, org.openide.util.NbBundle.getMessage(JSHintPanel.class, "JSHintPanel.jSFileInfo.text")); // NOI18N
+
         javax.swing.GroupLayout optionsPanelLayout = new javax.swing.GroupLayout(optionsPanel);
         optionsPanel.setLayout(optionsPanelLayout);
         optionsPanelLayout.setHorizontalGroup(
@@ -77,7 +109,9 @@ final class JSHintPanel extends javax.swing.JPanel {
                 .addContainerGap()
                 .addComponent(jSFileLabel)
                 .addGap(18, 18, 18)
-                .addComponent(jSFileTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 362, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(optionsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jSFileInfo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jSFileTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 362, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(browseForJSFileButton)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -93,7 +127,9 @@ final class JSHintPanel extends javax.swing.JPanel {
                     .addComponent(jSFileTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(defaultJSFileButton)
                     .addComponent(browseForJSFileButton))
-                .addContainerGap(13, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jSFileInfo)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
@@ -131,14 +167,15 @@ final class JSHintPanel extends javax.swing.JPanel {
     }
 
     boolean valid() {
-        // TODO check whether form is consistent and complete
-        return true;
+        File file = new File(jSFileTextField.getText());
+        return jSHintFileValidator.valid(file);
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton browseForJSFileButton;
     private javax.swing.JButton defaultJSFileButton;
     private javax.swing.JFileChooser fileChooser;
+    private javax.swing.JLabel jSFileInfo;
     private javax.swing.JLabel jSFileLabel;
     private javax.swing.JTextField jSFileTextField;
     private javax.swing.JPanel optionsPanel;
