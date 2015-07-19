@@ -1,71 +1,16 @@
 package lukazitnik.jshint.options;
 
 import java.awt.Color;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
-import java.io.Reader;
-import javax.swing.InputVerifier;
-import javax.swing.JComponent;
 import javax.swing.JFileChooser;
-import javax.swing.JTextField;
 import javax.swing.UIManager;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.filechooser.FileFilter;
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.Scriptable;
-import org.openide.filesystems.FileUtil;
 import org.openide.modules.InstalledFileLocator;
 import org.openide.util.NbBundle;
 import org.openide.util.NbPreferences;
 
 final class JSHintPanel extends javax.swing.JPanel {
-
-    class JSFilesOnlyFilter extends FileFilter {
-
-        @Override
-        public boolean accept(File file) {
-            return file.isDirectory() || FileUtil.toFileObject(file).getMIMEType().equals("text/javascript");
-        }
-
-        @Override
-        public String getDescription() {
-            return "JavaScript Files";
-        }
-    }
-
-    class JSFileVerifier extends InputVerifier {
-
-        private Scriptable scope;
-
-        JSFileVerifier() {
-            Context cx = Context.enter();
-            scope = cx.initStandardObjects();
-            Context.exit();
-        }
-
-        @Override
-        public boolean verify(JComponent jc) {
-            File file = new File(((JTextField) jc).getText());
-            Context cx = Context.enter();
-
-            if (scope.has("JSHINT", scope)) {
-                scope = cx.initStandardObjects();
-            }
-
-            try {
-                Reader in = new BufferedReader(new FileReader(file));
-                cx.evaluateReader(scope, in, "jshint.js", 1, null);
-            } catch (Exception ex) {
-                return false;
-            } finally {
-                Context.exit();
-            }
-
-            return scope.has("JSHINT", scope) != false;
-        }
-    }
 
     private final JSHintOptionsPanelController controller;
     private final String defaultJSFile = InstalledFileLocator.getDefault().locate("jshint.js", "lukazitnik.jshint", false).getPath();
