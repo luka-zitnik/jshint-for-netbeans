@@ -1,7 +1,6 @@
 package lukazitnik.jshint;
 
 import annotations.EditorRegistryListener;
-import java.beans.PropertyChangeListener;
 import java.util.prefs.PreferenceChangeEvent;
 import java.util.prefs.PreferenceChangeListener;
 import java.util.prefs.Preferences;
@@ -12,7 +11,7 @@ import org.openide.util.NbPreferences;
 
 public class Installer extends ModuleInstall {
 
-    final PropertyChangeListener pcl = new EditorRegistryListener();
+    final EditorRegistryListener ecl = new EditorRegistryListener();
     final Preferences p = NbPreferences.forModule(JSHintPanel.class);
 
     @Override
@@ -33,9 +32,11 @@ public class Installer extends ModuleInstall {
     private void updateChangeListenersOnEditorRegistry() {
         boolean annotationsOn = p.getBoolean("show.annotations", true);
         if (annotationsOn) {
-            EditorRegistry.addPropertyChangeListener(pcl);
+            EditorRegistry.addPropertyChangeListener(ecl);
+            ecl.addDocumentListeners();
         } else {
-            EditorRegistry.removePropertyChangeListener(pcl);
+            EditorRegistry.removePropertyChangeListener(ecl);
+            ecl.removeDocumentListeners();
         }
     }
 
