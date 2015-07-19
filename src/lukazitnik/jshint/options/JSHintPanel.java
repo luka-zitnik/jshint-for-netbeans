@@ -11,7 +11,7 @@ import org.openide.modules.InstalledFileLocator;
 import org.openide.util.NbBundle;
 import org.openide.util.NbPreferences;
 
-final class JSHintPanel extends javax.swing.JPanel {
+public final class JSHintPanel extends javax.swing.JPanel {
 
     private final JSHintOptionsPanelController controller;
     private final String defaultJSFile = InstalledFileLocator.getDefault().locate("jshint.js", "lukazitnik.jshint", false).getPath();
