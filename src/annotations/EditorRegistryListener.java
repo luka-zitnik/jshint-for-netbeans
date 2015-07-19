@@ -10,7 +10,7 @@ import org.netbeans.api.editor.EditorRegistry;
 import org.netbeans.modules.editor.NbEditorDocument;
 import org.netbeans.modules.editor.NbEditorUtilities;
 
-public class EditorListener implements PropertyChangeListener {
+public class EditorRegistryListener implements PropertyChangeListener {
 
     List<NbEditorDocument> history = new ArrayList<>();
 
