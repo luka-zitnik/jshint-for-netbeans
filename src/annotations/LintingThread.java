@@ -1,7 +1,9 @@
-package lukazitnik.jshint;
+package annotations;
 
 import java.util.List;
 import javax.swing.SwingUtilities;
+import lukazitnik.jshint.JSHint;
+import lukazitnik.jshint.JSHintError;
 import org.netbeans.api.progress.ProgressHandle;
 import org.netbeans.api.progress.ProgressHandleFactory;
 import org.netbeans.modules.editor.NbEditorDocument;

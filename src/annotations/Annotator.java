@@ -1,10 +1,11 @@
-package lukazitnik.jshint;
+package annotations;
 
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import javax.swing.text.BadLocationException;
+import lukazitnik.jshint.JSHintError;
 import org.netbeans.editor.AnnotationDesc;
 import org.netbeans.editor.Annotations;
 import org.netbeans.editor.Utilities;

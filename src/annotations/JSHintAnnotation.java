@@ -1,6 +1,7 @@
-package lukazitnik.jshint;
+package annotations;
 
 import java.util.List;
+import lukazitnik.jshint.JSHintError;
 import org.openide.text.Annotation;
 
 public final class JSHintAnnotation extends Annotation {
