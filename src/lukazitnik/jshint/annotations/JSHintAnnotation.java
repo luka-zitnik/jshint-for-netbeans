@@ -1,4 +1,4 @@
-package annotations;
+package lukazitnik.jshint.annotations;
 
 import java.util.List;
 import lukazitnik.jshint.JSHintError;

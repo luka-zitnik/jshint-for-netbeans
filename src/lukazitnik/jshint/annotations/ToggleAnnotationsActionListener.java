@@ -1,4 +1,4 @@
-package annotations;
+package lukazitnik.jshint.annotations;
 
 import java.awt.event.ActionEvent;
 import java.util.prefs.PreferenceChangeEvent;

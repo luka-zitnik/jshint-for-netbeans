@@ -1,4 +1,4 @@
-package annotations;
+package lukazitnik.jshint.annotations;
 
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;

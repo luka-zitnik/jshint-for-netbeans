@@ -1,6 +1,6 @@
 package lukazitnik.jshint;
 
-import annotations.EditorRegistryListener;
+import lukazitnik.jshint.annotations.EditorRegistryListener;
 import java.util.prefs.PreferenceChangeEvent;
 import java.util.prefs.PreferenceChangeListener;
 import java.util.prefs.Preferences;

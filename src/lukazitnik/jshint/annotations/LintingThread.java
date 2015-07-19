@@ -1,4 +1,4 @@
-package annotations;
+package lukazitnik.jshint.annotations;
 
 import java.util.List;
 import javax.swing.SwingUtilities;

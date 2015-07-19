@@ -1,4 +1,4 @@
-package annotations;
+package lukazitnik.jshint.annotations;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
