@@ -1,4 +1,4 @@
-package lukazitnik.jshint;
+package lukazitnik.jshint.options;
 
 import java.awt.Color;
 import java.io.BufferedReader;
@@ -58,11 +58,10 @@ final class JSHintPanel extends javax.swing.JPanel {
                 Reader in = new BufferedReader(new FileReader(file));
                 cx.evaluateReader(scope, in, "jshint.js", 1, null);
             } catch (Exception ex) {
-                Context.exit();
                 return false;
+            } finally {
+                Context.exit();
             }
-
-            Context.exit();
 
             return scope.has("JSHINT", scope) != false;
         }
@@ -113,14 +112,12 @@ final class JSHintPanel extends javax.swing.JPanel {
         browseForJSFileButton = new javax.swing.JButton();
         jSFileInfo = new javax.swing.JLabel();
 
-        fileChooser.setDialogTitle(org.openide.util.NbBundle.getMessage(JSHintPanel.class, "JSHintPanel.fileChooser.dialogTitle")); // NOI18N
         fileChooser.setFileFilter(new JSFilesOnlyFilter());
 
         setPreferredSize(new java.awt.Dimension(600, 58));
 
         org.openide.awt.Mnemonics.setLocalizedText(jSFileLabel, org.openide.util.NbBundle.getMessage(JSHintPanel.class, "JSHintPanel.jSFileLabel.text")); // NOI18N
 
-        jSFileTextField.setText(org.openide.util.NbBundle.getMessage(JSHintPanel.class, "JSHintPanel.jSFileTextField.text")); // NOI18N
         jSFileTextField.setInputVerifier(jSFileVerifier);
 
         org.openide.awt.Mnemonics.setLocalizedText(defaultJSFileButton, org.openide.util.NbBundle.getMessage(JSHintPanel.class, "JSHintPanel.defaultJSFileButton.text")); // NOI18N
@@ -136,8 +133,6 @@ final class JSHintPanel extends javax.swing.JPanel {
                 browseForJSFileButtonActionPerformed(evt);
             }
         });
-
-        org.openide.awt.Mnemonics.setLocalizedText(jSFileInfo, org.openide.util.NbBundle.getMessage(JSHintPanel.class, "JSHintPanel.jSFileInfo.text")); // NOI18N
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);

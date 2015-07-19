@@ -4,9 +4,6 @@
   <NonVisualComponents>
     <Component class="javax.swing.JFileChooser" name="fileChooser">
       <Properties>
-        <Property name="dialogTitle" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-          <ResourceString bundle="lukazitnik/jshint/Bundle.properties" key="JSHintPanel.fileChooser.dialogTitle" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
-        </Property>
         <Property name="fileFilter" type="javax.swing.filechooser.FileFilter" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
           <Connection code="new JSFilesOnlyFilter()" type="code"/>
         </Property>
@@ -70,15 +67,12 @@
     <Component class="javax.swing.JLabel" name="jSFileLabel">
       <Properties>
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-          <ResourceString bundle="lukazitnik/jshint/Bundle.properties" key="JSHintPanel.jSFileLabel.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+          <ResourceString bundle="lukazitnik/jshint/options/Bundle.properties" key="JSHintPanel.jSFileLabel.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
         </Property>
       </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="jSFileTextField">
       <Properties>
-        <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-          <ResourceString bundle="lukazitnik/jshint/Bundle.properties" key="JSHintPanel.jSFileTextField.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
-        </Property>
         <Property name="inputVerifier" type="javax.swing.InputVerifier" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
           <Connection code="jSFileVerifier" type="code"/>
         </Property>
@@ -87,7 +81,7 @@
     <Component class="javax.swing.JButton" name="defaultJSFileButton">
       <Properties>
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-          <ResourceString bundle="lukazitnik/jshint/Bundle.properties" key="JSHintPanel.defaultJSFileButton.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+          <ResourceString bundle="lukazitnik/jshint/options/Bundle.properties" key="JSHintPanel.defaultJSFileButton.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
         </Property>
       </Properties>
       <Events>
@@ -97,7 +91,7 @@
     <Component class="javax.swing.JButton" name="browseForJSFileButton">
       <Properties>
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-          <ResourceString bundle="lukazitnik/jshint/Bundle.properties" key="JSHintPanel.browseForJSFileButton.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+          <ResourceString bundle="lukazitnik/jshint/options/Bundle.properties" key="JSHintPanel.browseForJSFileButton.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
         </Property>
       </Properties>
       <Events>
@@ -105,11 +99,6 @@
       </Events>
     </Component>
     <Component class="javax.swing.JLabel" name="jSFileInfo">
-      <Properties>
-        <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-          <ResourceString bundle="lukazitnik/jshint/Bundle.properties" key="JSHintPanel.jSFileInfo.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
-        </Property>
-      </Properties>
     </Component>
   </SubComponents>
 </Form>

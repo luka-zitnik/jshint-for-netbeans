@@ -1,4 +1,4 @@
-package lukazitnik.jshint;
+package lukazitnik.jshint.options;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
