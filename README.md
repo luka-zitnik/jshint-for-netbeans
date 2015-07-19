@@ -30,3 +30,4 @@ Looks up configuration files the same way [JSHint for npm](https://www.npmjs.com
 - http://javamex.com/tutorials/threads/invokelater.shtml
 - http://wiki.netbeans.org/DevFaqInstalledFileLocator
 - https://netbeans.org/kb/docs/java/gui-filechooser.html
+- https://blogs.oracle.com/geertjan/entry/dynamically_changing_the_display_names
