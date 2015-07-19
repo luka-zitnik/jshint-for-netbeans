@@ -1,5 +1,6 @@
 package lukazitnik.jshint;
 
+import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -8,11 +9,15 @@ import javax.swing.InputVerifier;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JTextField;
+import javax.swing.UIManager;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.filechooser.FileFilter;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Scriptable;
 import org.openide.filesystems.FileUtil;
 import org.openide.modules.InstalledFileLocator;
+import org.openide.util.NbBundle;
 import org.openide.util.NbPreferences;
 
 final class JSHintPanel extends javax.swing.JPanel {
@@ -30,11 +35,11 @@ final class JSHintPanel extends javax.swing.JPanel {
         }
     }
 
-    class JSHintFileVerifier extends InputVerifier {
+    class JSFileVerifier extends InputVerifier {
 
-        private final Scriptable scope;
+        private Scriptable scope;
 
-        JSHintFileVerifier() {
+        JSFileVerifier() {
             Context cx = Context.enter();
             scope = cx.initStandardObjects();
             Context.exit();
@@ -42,15 +47,22 @@ final class JSHintPanel extends javax.swing.JPanel {
 
         @Override
         public boolean verify(JComponent jc) {
-            File file = new File(((JTextField)jc).getText());
+            File file = new File(((JTextField) jc).getText());
+            Context cx = Context.enter();
+
+            if (scope.has("JSHINT", scope)) {
+                scope = cx.initStandardObjects();
+            }
 
             try {
                 Reader in = new BufferedReader(new FileReader(file));
-                Context cx = Context.enter();
                 cx.evaluateReader(scope, in, "jshint.js", 1, null);
             } catch (Exception ex) {
+                Context.exit();
                 return false;
             }
+
+            Context.exit();
 
             return scope.has("JSHINT", scope) != false;
         }
@@ -58,11 +70,32 @@ final class JSHintPanel extends javax.swing.JPanel {
 
     private final JSHintOptionsPanelController controller;
     private final String defaultJSFile = InstalledFileLocator.getDefault().locate("jshint.js", "lukazitnik.jshint", false).getPath();
+    private final JSFileVerifier jSFileVerifier = new JSFileVerifier();
 
-    JSHintPanel(JSHintOptionsPanelController controller) {
+    JSHintPanel(final JSHintOptionsPanelController controller) {
         this.controller = controller;
         initComponents();
-        // TODO listen to changes in form fields and call controller.changed()
+        jSFileTextField.getDocument().addDocumentListener(new DocumentListener() {
+
+            @Override
+            public void insertUpdate(DocumentEvent de) {
+                anyUpdate(de);
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent de) {
+                anyUpdate(de);
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent de) {
+                anyUpdate(de);
+            }
+
+            private void anyUpdate(DocumentEvent de) {
+                controller.changed(!jSFileTextField.getText().equals(defaultJSFile));
+            }
+        });
     }
 
     /**
@@ -88,7 +121,7 @@ final class JSHintPanel extends javax.swing.JPanel {
         org.openide.awt.Mnemonics.setLocalizedText(jSFileLabel, org.openide.util.NbBundle.getMessage(JSHintPanel.class, "JSHintPanel.jSFileLabel.text")); // NOI18N
 
         jSFileTextField.setText(org.openide.util.NbBundle.getMessage(JSHintPanel.class, "JSHintPanel.jSFileTextField.text")); // NOI18N
-        jSFileTextField.setInputVerifier(new JSHintFileVerifier());
+        jSFileTextField.setInputVerifier(jSFileVerifier);
 
         org.openide.awt.Mnemonics.setLocalizedText(defaultJSFileButton, org.openide.util.NbBundle.getMessage(JSHintPanel.class, "JSHintPanel.defaultJSFileButton.text")); // NOI18N
         defaultJSFileButton.addActionListener(new java.awt.event.ActionListener() {
@@ -151,15 +184,28 @@ final class JSHintPanel extends javax.swing.JPanel {
     }//GEN-LAST:event_browseForJSFileButtonActionPerformed
 
     void load() {
-         jSFileTextField.setText(NbPreferences.forModule(JSHintPanel.class).get("jshint.js", defaultJSFile));
+        jSFileTextField.setText(NbPreferences.forModule(JSHintPanel.class).get("jshint.js", defaultJSFile));
     }
 
     void store() {
-         NbPreferences.forModule(JSHintPanel.class).put("jshint.js", jSFileTextField.getText());
+        NbPreferences.forModule(JSHintPanel.class).put("jshint.js", jSFileTextField.getText());
     }
 
+    @NbBundle.Messages(
+            "ERR_BadJSFile=The file doesn't look right."
+    )
     boolean valid() {
-        return true;
+        boolean jSFileValid = jSFileVerifier.verify(jSFileTextField);
+
+        if (jSFileValid) {
+            jSFileInfo.setText("");
+            jSFileInfo.setForeground(UIManager.getColor("Label.foreground"));
+        } else {
+            jSFileInfo.setText(Bundle.ERR_BadJSFile());
+            jSFileInfo.setForeground(Color.red);
+        }
+
+        return jSFileValid;
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
