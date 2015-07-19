@@ -2,6 +2,7 @@ package lukazitnik.jshint.options;
 
 import java.awt.Color;
 import java.io.File;
+import java.util.prefs.Preferences;
 import javax.swing.JFileChooser;
 import javax.swing.UIManager;
 import javax.swing.event.DocumentEvent;
@@ -56,6 +57,7 @@ final class JSHintPanel extends javax.swing.JPanel {
         defaultJSFileButton = new javax.swing.JButton();
         browseForJSFileButton = new javax.swing.JButton();
         jSFileInfo = new javax.swing.JLabel();
+        showAnnotationsCheckBox = new javax.swing.JCheckBox();
 
         fileChooser.setFileFilter(new JSFilesOnlyFilter());
 
@@ -79,21 +81,30 @@ final class JSHintPanel extends javax.swing.JPanel {
             }
         });
 
+        org.openide.awt.Mnemonics.setLocalizedText(jSFileInfo, org.openide.util.NbBundle.getMessage(JSHintPanel.class, "JSHintPanel.jSFileInfo.text")); // NOI18N
+
+        org.openide.awt.Mnemonics.setLocalizedText(showAnnotationsCheckBox, org.openide.util.NbBundle.getMessage(JSHintPanel.class, "JSHintPanel.showAnnotationsCheckBox.text")); // NOI18N
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jSFileLabel)
-                .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jSFileInfo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jSFileTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 387, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(browseForJSFileButton)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(defaultJSFileButton)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jSFileLabel)
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jSFileInfo, javax.swing.GroupLayout.DEFAULT_SIZE, 387, Short.MAX_VALUE)
+                            .addComponent(jSFileTextField))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(browseForJSFileButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(defaultJSFileButton))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(showAnnotationsCheckBox)
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -106,8 +117,10 @@ final class JSHintPanel extends javax.swing.JPanel {
                     .addComponent(browseForJSFileButton)
                     .addComponent(defaultJSFileButton))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jSFileInfo)
-                .addContainerGap(18, Short.MAX_VALUE))
+                .addComponent(jSFileInfo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(showAnnotationsCheckBox)
+                .addContainerGap(32, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -124,17 +137,27 @@ final class JSHintPanel extends javax.swing.JPanel {
     }//GEN-LAST:event_browseForJSFileButtonActionPerformed
 
     void load() {
-        jSFileTextField.setText(NbPreferences.forModule(JSHintPanel.class).get("jshint.js", defaultJSFile));
+        Preferences p = NbPreferences.forModule(JSHintPanel.class);
+        jSFileTextField.setText(p.get("jshint.js", defaultJSFile));
+        showAnnotationsCheckBox.setSelected(p.getBoolean("show.annotations", true));
     }
 
     void store() {
-        NbPreferences.forModule(JSHintPanel.class).put("jshint.js", jSFileTextField.getText());
+        Preferences p = NbPreferences.forModule(JSHintPanel.class);
+        p.put("jshint.js", jSFileTextField.getText());
+        p.putBoolean("show.annotations", showAnnotationsCheckBox.isSelected());
     }
 
     @NbBundle.Messages(
             "ERR_BadJSFile=The file doesn't look right."
     )
     boolean valid() {
+        if (jSFileTextField.getText().isEmpty()) {
+            jSFileInfo.setText(NbBundle.getMessage(JSHintPanel.class, "JSHintPanel.jSFileInfo.text"));
+            jSFileInfo.setForeground(UIManager.getColor("Label.foreground"));
+            return false;
+        }
+
         boolean jSFileValid = jSFileVerifier.verify(jSFileTextField);
 
         if (jSFileValid) {
@@ -155,5 +178,6 @@ final class JSHintPanel extends javax.swing.JPanel {
     private javax.swing.JLabel jSFileInfo;
     private javax.swing.JLabel jSFileLabel;
     private javax.swing.JTextField jSFileTextField;
+    private javax.swing.JCheckBox showAnnotationsCheckBox;
     // End of variables declaration//GEN-END:variables
 }
