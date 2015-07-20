@@ -3,9 +3,11 @@ package lukazitnik.jshint.annotations;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import javax.swing.SwingUtilities;
 import javax.swing.text.JTextComponent;
 import lukazitnik.jshint.JSHintError;
@@ -15,7 +17,7 @@ import org.netbeans.modules.editor.NbEditorUtilities;
 
 public class EditorRegistryListener implements PropertyChangeListener {
 
-    List<NbEditorDocument> history = new ArrayList<>();
+    Map<NbEditorDocument, JSHintDocumentListener> history = new HashMap<>();
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
@@ -33,8 +35,7 @@ public class EditorRegistryListener implements PropertyChangeListener {
 
         switch (evt.getPropertyName()) {
             case EditorRegistry.FOCUS_GAINED_PROPERTY:
-                if (!history.contains(focusedDocument)) {
-                    history.add(focusedDocument);
+                if (!history.keySet().contains(focusedDocument)) {
 
                     // The file has just been opened, so ...
                     addDocumentListenerAndAnnotations(focusedDocument);
@@ -44,7 +45,7 @@ public class EditorRegistryListener implements PropertyChangeListener {
 
                 // Clean up history
                 List<NbEditorDocument> openDocuments = getOpenDocuments();
-                Iterator<NbEditorDocument> it = history.iterator();
+                Iterator<NbEditorDocument> it = history.keySet().iterator();
                 while (it.hasNext()) {
                     NbEditorDocument historicalDocument = it.next();
                     if (!openDocuments.contains(historicalDocument)) {
@@ -55,18 +56,18 @@ public class EditorRegistryListener implements PropertyChangeListener {
         }
     }
 
-    public void addDocumentListeners() {
+    public void updateOpenDocuments() {
         List<NbEditorDocument> openDocuments = getOpenDocuments();
         for (NbEditorDocument d : openDocuments) {
             addDocumentListenerAndAnnotations(d);
         }
     }
 
-    public void removeDocumentListeners() {
-        Iterator<NbEditorDocument> it = history.iterator();
+    public void updateHistoryDocuments() {
+        Iterator<NbEditorDocument> it = history.keySet().iterator();
         while (it.hasNext()) {
-            NbEditorDocument historicalDocument = it.next();
-            removeDocumentListenerAndAnnotations(historicalDocument);
+            NbEditorDocument d = it.next();
+            removeDocumentListenerAndAnnotations(d);
             it.remove();
         }
     }
@@ -83,14 +84,12 @@ public class EditorRegistryListener implements PropertyChangeListener {
         JSHintDocumentListener dl = new JSHintDocumentListener();
         dl.updateAnnotations(d);
         d.addDocumentListener(dl);
+        history.put(d, dl);
     }
 
     private void removeDocumentListenerAndAnnotations(NbEditorDocument d) {
-        JSHintDocumentListener[] listeners = d.getListeners(JSHintDocumentListener.class);
-        for (int i = 0; i < listeners.length; ++i) {
-            d.removeDocumentListener(listeners[i]); // Doesn't work!
-        }
         SwingUtilities.invokeLater(new Annotator(d, new LinkedList<JSHintError>()));
+        d.removeDocumentListener(history.get(d));
     }
 
 }

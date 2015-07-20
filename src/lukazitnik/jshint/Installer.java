@@ -33,10 +33,10 @@ public class Installer extends ModuleInstall {
         boolean annotationsOn = p.getBoolean("show.annotations", true);
         if (annotationsOn) {
             EditorRegistry.addPropertyChangeListener(ecl);
-            ecl.addDocumentListeners();
+            ecl.updateOpenDocuments();
         } else {
             EditorRegistry.removePropertyChangeListener(ecl);
-            ecl.removeDocumentListeners();
+            ecl.updateHistoryDocuments();
         }
     }
 
