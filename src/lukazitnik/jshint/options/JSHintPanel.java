@@ -1,12 +1,17 @@
 package lukazitnik.jshint.options;
 
 import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.prefs.Preferences;
+import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.UIManager;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import org.openide.LifecycleManager;
+import org.openide.awt.NotificationDisplayer;
 import org.openide.modules.InstalledFileLocator;
 import org.openide.util.NbBundle;
 import org.openide.util.NbPreferences;
@@ -142,9 +147,29 @@ public final class JSHintPanel extends javax.swing.JPanel {
         showAnnotationsCheckBox.setSelected(p.getBoolean("show.annotations", true));
     }
 
+    @NbBundle.Messages({
+        "LBL_RestartRequest=JSHint plugin asks for restart",
+        "DESC_RestartRequest=Your changes to the configuration of the plugin will take effect after a restart.",
+        "ICON_RestartRequest="
+    })
     void store() {
         Preferences p = NbPreferences.forModule(JSHintPanel.class);
-        p.put("jshint.js", jSFileTextField.getText());
+        String oldJSFiile = p.get("jshint.js", defaultJSFile);
+        String newJSFile = jSFileTextField.getText();
+
+        if (!oldJSFiile.equals(newJSFile)) {
+            NotificationDisplayer.getDefault().notify(Bundle.LBL_RestartRequest(), new ImageIcon(Bundle.ICON_RestartRequest()), Bundle.DESC_RestartRequest(), new ActionListener() {
+
+                @Override
+                public void actionPerformed(ActionEvent ae) {
+                    LifecycleManager dlm = LifecycleManager.getDefault();
+                    dlm.markForRestart();
+                    dlm.exit();
+                }
+            });
+        }
+
+        p.put("jshint.js", newJSFile);
         p.putBoolean("show.annotations", showAnnotationsCheckBox.isSelected());
     }
 
