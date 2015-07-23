@@ -8,6 +8,7 @@ import java.io.Reader;
 import java.util.LinkedList;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
+import lukazitnik.jshint.options.JSHintPanel;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -20,24 +21,31 @@ import org.mozilla.javascript.NativeObject;
 import org.mozilla.javascript.Scriptable;
 import org.netbeans.modules.editor.NbEditorUtilities;
 import org.openide.modules.InstalledFileLocator;
+import org.openide.util.NbPreferences;
 
 public class JSHint {
 
-    public final static JSHint instance = new JSHint();
-    private Scriptable scope;
+    private static JSHint instance;
+    private final Scriptable scope;
     private Function jshint;
 
-    private JSHint() {
+    private JSHint() throws IOException {
         Context cx = Context.enter();
         scope = cx.initStandardObjects();
 
         try {
             jshint = evaluateJSHint(cx, scope);
-        } catch (IOException ex) {
-            Exceptions.printStackTrace(ex);
         } finally {
             Context.exit();
         }
+    }
+
+    public static JSHint getInstance () throws IOException {
+        if (instance == null) {
+            instance = new JSHint();
+        }
+
+        return instance;
     }
 
     public LinkedList<JSHintError> lint(Document d) {
@@ -146,9 +154,11 @@ public class JSHint {
 
         // jshint.js is the web bundle of the JSHint, downloaded from
         // https://raw.githubusercontent.com/jshint/jshint/master/dist/jshint.js
-        File file = InstalledFileLocator.getDefault().locate("jshint.js", "lukazitnik.jshint", false);
+        String defaultJSFile = InstalledFileLocator.getDefault().locate("jshint.js", "lukazitnik.jshint", false).getPath();
 
-        return new BufferedReader(new FileReader(file));
+        String jSFile = NbPreferences.forModule(JSHintPanel.class).get("jshint.js", defaultJSFile);
+
+        return new BufferedReader(new FileReader(new File(jSFile)));
     }
 
     // Async executions of this method cause org.mozilla.javascript.JavaScriptException:

@@ -1,5 +1,6 @@
 package lukazitnik.jshint.annotations;
 
+import java.io.IOException;
 import java.util.List;
 import javax.swing.SwingUtilities;
 import lukazitnik.jshint.JSHint;
@@ -33,12 +34,15 @@ public class LintingThread extends Thread {
     public void run() {
         progressHandle.start();
 
-        JSHint jshint = JSHint.instance;
-        final List<JSHintError> errors = jshint.lint(d);
-
-        progressHandle.finish();
-
-        SwingUtilities.invokeLater(new Annotator(d, errors));
+        try {
+            JSHint jshint = JSHint.getInstance();
+            final List<JSHintError> errors = jshint.lint(d);
+            SwingUtilities.invokeLater(new Annotator(d, errors));
+        } catch (IOException ex) {
+            // Installer should never let this happen
+        } finally {
+            progressHandle.finish();
+        }
     }
 
     public void stopAndFinishProgressHandle() {

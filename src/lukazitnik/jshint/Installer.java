@@ -1,5 +1,6 @@
 package lukazitnik.jshint;
 
+import java.io.IOException;
 import lukazitnik.jshint.annotations.EditorRegistryListener;
 import java.util.prefs.PreferenceChangeEvent;
 import java.util.prefs.PreferenceChangeListener;
@@ -16,7 +17,12 @@ public class Installer extends ModuleInstall {
 
     @Override
     public void restored() {
-        JSHint jshint = JSHint.instance; // Prevent possible later interruption
+        try {
+            JSHint jshint = JSHint.getInstance(); // Also prevents possible later interruption
+        } catch (IOException ex) {
+            return;
+        }
+
         p.addPreferenceChangeListener(new PreferenceChangeListener() {
 
             @Override

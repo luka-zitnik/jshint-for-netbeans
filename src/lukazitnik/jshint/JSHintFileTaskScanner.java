@@ -1,5 +1,6 @@
 package lukazitnik.jshint;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -28,8 +29,15 @@ public class JSHintFileTaskScanner extends FileTaskScanner {
             return Collections.<Task>emptyList();
         }
 
+        JSHint jshint;
+
+        try {
+            jshint = JSHint.getInstance();
+        } catch (IOException ex) {
+            return Collections.<Task>emptyList();
+        }
+
         LinkedList<Task> tasks = new LinkedList<>();
-        JSHint jshint = JSHint.instance;
 
         for (JSHintError error : jshint.lint(fo)) {
             tasks.add(Task.create(fo, "nb-tasklist-jshint", error.getReason(), error.getLine()));
