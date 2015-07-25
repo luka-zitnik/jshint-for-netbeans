@@ -4,5 +4,5 @@ OpenIDE-Module: lukazitnik.jshint
 OpenIDE-Module-Install: lukazitnik/jshint/Installer.class
 OpenIDE-Module-Layer: lukazitnik/jshint/layer.xml
 OpenIDE-Module-Localizing-Bundle: lukazitnik/jshint/Bundle.properties
-OpenIDE-Module-Specification-Version: 1.0
+OpenIDE-Module-Specification-Version: 1.1
 
