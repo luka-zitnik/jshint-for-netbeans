@@ -5,7 +5,7 @@
         <folder name="Groups">
             <file name="jshint.instance">
                 <attr name="instanceCreate" methodvalue="org.netbeans.spi.tasklist.Task.createGroup"/>
-                <attr name="localizingBundle" stringvalue="lukazitnik.jshint.Bundle"/>
+                <attr name="localizingBundle" stringvalue="lukazitnik.jshint.tasks.Bundle"/>
                 <attr name="groupName" stringvalue="nb-tasklist-jshint"/>
                 <attr name="diplayNameKey" stringvalue="LBL_group"/>
                 <attr name="descriptionKey" stringvalue="HINT_group"/>
@@ -15,14 +15,14 @@
         <folder name="Scanners">
             <file name="JSHintFileTaskScanner.instance">
                 <attr name="instanceOf" stringvalue="org.netbeans.spi.tasklist.FileTaskScanner"/>
-                <attr name="instanceCreate" methodvalue="lukazitnik.jshint.JSHintFileTaskScanner.create"/>
+                <attr name="instanceCreate" methodvalue="lukazitnik.jshint.tasks.JSHintFileTaskScanner.create"/>
             </file>
         </folder>
     </folder>
     <folder name="Editors">
         <folder name="AnnotationTypes">
             <file name="lukazitnik-jshint-jshintannotation.xml"
-                  url="JSHintAnnotation.xml">
+                  url="annotations/JSHintAnnotation.xml">
             </file>
         </folder>
     </folder>

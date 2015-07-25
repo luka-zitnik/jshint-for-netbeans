@@ -1,9 +1,11 @@
-package lukazitnik.jshint;
+package lukazitnik.jshint.tasks;
 
 import java.io.IOException;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import lukazitnik.jshint.JSHint;
+import lukazitnik.jshint.JSHintError;
 import org.netbeans.spi.tasklist.FileTaskScanner;
 import org.netbeans.spi.tasklist.Task;
 import org.openide.filesystems.FileObject;
