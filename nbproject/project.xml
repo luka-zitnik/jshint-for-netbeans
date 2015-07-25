@@ -166,8 +166,8 @@
             </test-dependencies>
             <public-packages/>
             <class-path-extension>
-                <runtime-relative-path>ext/rhino.jar</runtime-relative-path>
-                <binary-origin>release/modules/ext/rhino.jar</binary-origin>
+                <runtime-relative-path>ext/rhino-1.7.7.jar</runtime-relative-path>
+                <binary-origin>release/modules/ext/rhino-1.7.7.jar</binary-origin>
             </class-path-extension>
         </data>
     </configuration>

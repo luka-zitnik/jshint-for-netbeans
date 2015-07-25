@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ivy-module version="2.0">
+    <info organisation="luka-zitnik" module="jshint-for-netbeans"/>
+    <dependencies>
+        <dependency org="org.mozilla" name="rhino" rev="1.7.7" />
+    </dependencies>
+</ivy-module>
