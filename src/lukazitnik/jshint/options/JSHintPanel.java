@@ -21,6 +21,7 @@ public final class JSHintPanel extends javax.swing.JPanel {
     private final JSHintOptionsPanelController controller;
     private final String defaultJSFile = InstalledFileLocator.getDefault().locate("jshint.js", "lukazitnik.jshint", false).getPath();
     private final JSFileVerifier jSFileVerifier = new JSFileVerifier();
+    private final JSFileVersionDeducer jSFileVersionDeducer = new JSFileVersionDeducer();
 
     JSHintPanel(final JSHintOptionsPanelController controller) {
         this.controller = controller;
@@ -186,7 +187,7 @@ public final class JSHintPanel extends javax.swing.JPanel {
         boolean jSFileValid = jSFileVerifier.verify(jSFileTextField);
 
         if (jSFileValid) {
-            jSFileInfo.setText("");
+            jSFileInfo.setText("JSHint, version " + jSFileVersionDeducer.deduce(jSFileTextField));
             jSFileInfo.setForeground(UIManager.getColor("Label.foreground"));
         } else {
             jSFileInfo.setText(Bundle.ERR_BadJSFile());
