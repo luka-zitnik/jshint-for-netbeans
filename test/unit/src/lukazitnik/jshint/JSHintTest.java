@@ -5,11 +5,21 @@ import java.io.PrintWriter;
 import java.util.LinkedList;
 import org.junit.Assert;
 import org.junit.Test;
+import org.netbeans.junit.NbModuleSuite;
+import org.netbeans.junit.NbTestCase;
 import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileSystem;
 import org.openide.filesystems.FileUtil;
 
-public class JSHintTest {
+public class JSHintTest extends NbTestCase {
+
+    public JSHintTest(String name) {
+        super(name);
+    }
+
+    public static junit.framework.Test suite() {
+        return NbModuleSuite.create(JSHintTest.class, null, null);
+    }
 
     @Test
     public void testLint() throws IOException {
