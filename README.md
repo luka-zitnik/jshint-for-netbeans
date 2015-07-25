@@ -32,3 +32,4 @@ Looks up configuration files the same way [JSHint for npm](https://www.npmjs.com
 - https://netbeans.org/kb/docs/java/gui-filechooser.html
 - http://hg.netbeans.org/main/file/8c9da63c882c/cordova/src/org/netbeans/modules/cordova/options
 - https://blogs.oracle.com/geertjan/entry/dynamically_changing_the_display_names
+- http://wiki.netbeans.org/DevFaqAppLifecycleHooks
