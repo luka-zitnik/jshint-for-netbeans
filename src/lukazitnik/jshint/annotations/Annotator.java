@@ -46,7 +46,7 @@ public class Annotator implements Runnable {
     }
 
     private void addAnnotations(List<JSHintError> errors) {
-        Map<Integer, List<JSHintError>> chunks = splitIntoChunks(errors);
+        Map<Integer, List<JSHintError>> chunks = splitByLineNumbers(errors);
 
         for (Integer line : chunks.keySet()) {
 
@@ -64,7 +64,7 @@ public class Annotator implements Runnable {
         }
     }
 
-    private Map<Integer, List<JSHintError>> splitIntoChunks(List<JSHintError> errors) {
+    private Map<Integer, List<JSHintError>> splitByLineNumbers(List<JSHintError> errors) {
         Map<Integer, List<JSHintError>> chunks = new HashMap<>();
 
         for (JSHintError error : errors) {

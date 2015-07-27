@@ -17,9 +17,13 @@ public class Installer extends ModuleInstall {
 
     @Override
     public void restored() {
+
+        // If an instance of JSHint can't be created, adding listeners makes no sense.
         try {
             JSHint jshint = JSHint.getInstance(); // Also prevents possible later interruption
         } catch (IOException ex) {
+
+            // JSHintPanel should never let this happen.
             return;
         }
 

@@ -49,6 +49,8 @@ public class EditorRegistryListener implements PropertyChangeListener {
                 while (it.hasNext()) {
                     NbEditorDocument historicalDocument = it.next();
                     if (!openDocuments.contains(historicalDocument)) {
+
+                        // Don't bother calling removeDocumentListenerAndAnnotations()
                         it.remove();
                     }
                 }
