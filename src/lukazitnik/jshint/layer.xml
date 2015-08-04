@@ -10,6 +10,7 @@
                 <attr name="diplayNameKey" stringvalue="LBL_group"/>
                 <attr name="descriptionKey" stringvalue="HINT_group"/>
                 <attr name="iconKey" stringvalue="ICON_group"/>
+                <attr name="position" intvalue="150"/>
             </file>
         </folder>
         <folder name="Scanners">

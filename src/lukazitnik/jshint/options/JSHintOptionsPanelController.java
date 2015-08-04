@@ -12,7 +12,8 @@ import org.openide.util.Lookup;
         location = "Editor",
         displayName = "#AdvancedOption_DisplayName_JSHint",
         keywords = "#AdvancedOption_Keywords_JSHint",
-        keywordsCategory = "Editor/JSHint"
+        keywordsCategory = "Editor/JSHint",
+        position = 450
 )
 @org.openide.util.NbBundle.Messages({"AdvancedOption_DisplayName_JSHint=JSHint", "AdvancedOption_Keywords_JSHint=JSHint,Change jshint.js,JSHint Annotations"})
 public final class JSHintOptionsPanelController extends OptionsPanelController {

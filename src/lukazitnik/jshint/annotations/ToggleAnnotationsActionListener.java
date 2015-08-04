@@ -13,7 +13,7 @@ import org.openide.util.NbPreferences;
 
 @ActionID(category = "Edit", id = "lukazitnik.jshint.ToggleAnnotationsActionListener")
 @ActionRegistration(lazy = false, displayName = "NOT-USED")
-@ActionReference(path = "Editors/text/javascript/Popup")
+@ActionReference(path = "Editors/text/javascript/Popup", position = 150)
 public class ToggleAnnotationsActionListener extends AbstractAction implements PreferenceChangeListener {
 
     private final Preferences p = NbPreferences.forModule(JSHintPanel.class);
