@@ -138,7 +138,7 @@ public class JSHint {
         Scriptable scriptable = cx.newObject(scope);
 
         for (Object key : obj.keySet()) {
-            scriptable.put(key.toString(), scriptable, obj.get(key).toString());
+            scriptable.put((String) key, scriptable, obj.get(key));
         }
 
         return scriptable;
