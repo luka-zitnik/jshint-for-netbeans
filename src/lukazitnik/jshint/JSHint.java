@@ -150,7 +150,7 @@ public class JSHint {
         return (Function) scope.get("JSHINT", scope);
     }
 
-    private Reader getReader() throws IOException {System.out.println(InstalledFileLocator.getDefault());
+    private Reader getReader() throws IOException {
 
         // jshint.js is the web bundle of the JSHint, downloaded from
         // https://raw.githubusercontent.com/jshint/jshint/master/dist/jshint.js
