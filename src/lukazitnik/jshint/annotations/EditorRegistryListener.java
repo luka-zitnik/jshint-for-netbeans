@@ -44,7 +44,7 @@ public class EditorRegistryListener implements PropertyChangeListener {
             case EditorRegistry.COMPONENT_REMOVED_PROPERTY:
 
                 // Clean up history
-                List<NbEditorDocument> openDocuments = getOpenDocuments();
+                List<NbEditorDocument> openDocuments = getOpenJSDocuments();
                 Iterator<NbEditorDocument> it = history.keySet().iterator();
                 while (it.hasNext()) {
                     NbEditorDocument historicalDocument = it.next();
@@ -59,7 +59,7 @@ public class EditorRegistryListener implements PropertyChangeListener {
     }
 
     public void updateOpenDocuments() {
-        List<NbEditorDocument> openDocuments = getOpenDocuments();
+        List<NbEditorDocument> openDocuments = getOpenJSDocuments();
         for (NbEditorDocument d : openDocuments) {
             addDocumentListenerAndAnnotations(d);
         }
@@ -74,10 +74,14 @@ public class EditorRegistryListener implements PropertyChangeListener {
         }
     }
 
-    private List<NbEditorDocument> getOpenDocuments() {
+    private List<NbEditorDocument> getOpenJSDocuments() {
         List<NbEditorDocument> openDocuments = new ArrayList<>();
         for (JTextComponent component : EditorRegistry.componentList()) {
-            openDocuments.add((NbEditorDocument) component.getDocument());
+            NbEditorDocument d = (NbEditorDocument) component.getDocument();
+            String mimeType = (String) d.getProperty(NbEditorDocument.MIME_TYPE_PROP);
+            if (mimeType.equals("text/javascript")) {
+                openDocuments.add(d);
+            }
         }
         return openDocuments;
     }
