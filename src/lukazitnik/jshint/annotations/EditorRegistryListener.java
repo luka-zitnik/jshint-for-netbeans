@@ -13,7 +13,6 @@ import javax.swing.text.JTextComponent;
 import lukazitnik.jshint.JSHintError;
 import org.netbeans.api.editor.EditorRegistry;
 import org.netbeans.modules.editor.NbEditorDocument;
-import org.netbeans.modules.editor.NbEditorUtilities;
 
 public class EditorRegistryListener implements PropertyChangeListener {
 
@@ -28,8 +27,9 @@ public class EditorRegistryListener implements PropertyChangeListener {
         }
 
         final NbEditorDocument focusedDocument = (NbEditorDocument) jtc.getDocument();
+        String mimeType = (String) focusedDocument.getProperty(NbEditorDocument.MIME_TYPE_PROP);
 
-        if (!NbEditorUtilities.getFileObject(focusedDocument).getMIMEType().equals("text/javascript")) {
+        if (!mimeType.equals("text/javascript")) {
             return;
         }
 
