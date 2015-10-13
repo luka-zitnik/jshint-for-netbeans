@@ -9,9 +9,6 @@ import java.util.LinkedList;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import lukazitnik.jshint.options.JSHintPanel;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 import org.openide.filesystems.FileObject;
 import org.openide.util.Exceptions;
 import org.mozilla.javascript.Context;
@@ -19,6 +16,8 @@ import org.mozilla.javascript.Function;
 import org.mozilla.javascript.NativeArray;
 import org.mozilla.javascript.NativeObject;
 import org.mozilla.javascript.Scriptable;
+import org.mozilla.javascript.json.JsonParser;
+import org.mozilla.javascript.json.JsonParser.ParseException;
 import org.netbeans.modules.editor.NbEditorUtilities;
 import org.openide.modules.InstalledFileLocator;
 import org.openide.util.NbPreferences;
@@ -54,7 +53,7 @@ public class JSHint {
         FileObject fo = NbEditorUtilities.getFileObject(d);
 
         try {
-            Scriptable config = jsonToScriptable(cx, scope, getConfig(fo));
+            Object config = getConfig(cx, fo);
             Object args[] = {d.getText(0, d.getLength()), config};
             NativeArray errors = callJSHint(cx, args);
 
@@ -82,7 +81,7 @@ public class JSHint {
         LinkedList<JSHintError> result = new LinkedList<>();
 
         try {
-            Scriptable config = jsonToScriptable(cx, scope, getConfig(fo));
+            Object config = getConfig(cx, fo);
             Object args[] = {fo.asText(), config};
             NativeArray errors = callJSHint(cx, args);
 
@@ -105,15 +104,11 @@ public class JSHint {
         return result;
     }
 
-    private JSONObject getConfig(FileObject fo) throws IOException, ParseException {
-        JSONParser parser = new JSONParser();
+    private Object getConfig(Context cx, FileObject fo) throws ParseException, IOException {
+        JsonParser parser = new JsonParser(cx, scope);
         FileObject config = findConfig(fo);
-
-        if (config == null) {
-            return (JSONObject) parser.parse("{}");
-        }
-
-        return (JSONObject) parser.parse(config.asText());
+        String json = config == null ? "{}" : config.asText();
+        return parser.parseValue(json);
     }
 
     private FileObject findConfig(FileObject fo) {
@@ -132,16 +127,6 @@ public class JSHint {
         }
 
         return findFile(name, folder.getParent());
-    }
-
-    private Scriptable jsonToScriptable(Context cx, Scriptable scope, JSONObject obj) {
-        Scriptable scriptable = cx.newObject(scope);
-
-        for (Object key : obj.keySet()) {
-            scriptable.put((String) key, scriptable, obj.get(key));
-        }
-
-        return scriptable;
     }
 
     private Function evaluateJSHint(Context cx, Scriptable scope) throws IOException {
