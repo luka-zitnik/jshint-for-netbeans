@@ -26,6 +26,7 @@ public class JSHintTest extends NbTestCase {
         FileSystem fs = FileUtil.createMemoryFileSystem();
         FileObject fo = fs.getRoot().createData("index.js");
         PrintWriter out = (new PrintWriter(fo.getOutputStream()));
+
         out.write("a;");
         out.close();
 
@@ -44,22 +45,23 @@ public class JSHintTest extends NbTestCase {
         FileObject hasFile = fs.getRoot().createFolder("hasFile");
         FileObject file = hasFile.createData("file");
         FileObject childFolder = hasFile.createFolder("childFolder");
-
         FileObject result = JSHint.findFile("file", childFolder);
+
         Assert.assertEquals(file, result);
     }
 
     @Test
     public void testLintWithConfig() throws IOException {
-        FileSystem fs = FileUtil.createMemoryFileSystem();
-
-        FileObject jsFo = fs.getRoot().createData("index.js");
+        FileObject root = FileUtil.createMemoryFileSystem().getRoot();
+        FileObject jsFo = root.createData("index.js");
         PrintWriter jsOut = (new PrintWriter(jsFo.getOutputStream()));
+
         jsOut.write("while (day)\n  shuffle();");
         jsOut.close();
 
-        FileObject configFo = fs.getRoot().createData(".jshintrc");
+        FileObject configFo = root.createData(".jshintrc");
         PrintWriter configOut = (new PrintWriter(configFo.getOutputStream()));
+
         configOut.write("{\"curly\":true,\"undef\":true}");
         configOut.close();
 
@@ -70,6 +72,27 @@ public class JSHintTest extends NbTestCase {
         Assert.assertEquals("'shuffle' is not defined.", errors.pop().getReason());
         Assert.assertEquals("'day' is not defined.", errors.pop().getReason());
         Assert.assertEquals("Expected '{' and instead saw 'shuffle'.", errors.pop().getReason());
+    }
+
+    @Test
+    public void testGlobalsOption() throws IOException {
+        FileObject root = FileUtil.createMemoryFileSystem().getRoot();
+        FileObject jsFo = root.createData("index.js");
+        PrintWriter jsOut = (new PrintWriter(jsFo.getOutputStream()));
+
+        jsOut.write("a(); b = 1;");
+        jsOut.close();
+
+        FileObject config = root.createData(".jshintrc");
+        PrintWriter configOut = (new PrintWriter(config.getOutputStream()));
+
+        configOut.write("{\"undef\":true,\"globals\":{\"a\":false,\"b\":true}}");
+        configOut.close();
+
+        JSHint jshint =  JSHint.getInstance();
+        LinkedList<JSHintError> errors = jshint.lint(jsFo);
+
+        Assert.assertEquals(0, errors.size());
     }
 
 }
