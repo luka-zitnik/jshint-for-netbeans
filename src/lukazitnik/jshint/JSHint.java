@@ -53,8 +53,16 @@ public class JSHint {
         FileObject fo = NbEditorUtilities.getFileObject(d);
 
         try {
-            Object config = getConfig(cx, fo);
-            Object args[] = {d.getText(0, d.getLength()), config};
+            Scriptable config = getConfig(cx, fo);
+            Object globals = config.get("globals", config);
+
+            if (globals == Scriptable.NOT_FOUND) {
+                globals = Context.getUndefinedValue();
+            }
+
+            config.delete("globals");
+
+            Object args[] = {d.getText(0, d.getLength()), config, globals};
             NativeArray errors = callJSHint(cx, args);
 
             for (Object error : errors) {
@@ -81,8 +89,16 @@ public class JSHint {
         LinkedList<JSHintError> result = new LinkedList<>();
 
         try {
-            Object config = getConfig(cx, fo);
-            Object args[] = {fo.asText(), config};
+            Scriptable config = getConfig(cx, fo);
+            Object globals = config.get("globals", config);
+
+            if (globals == Scriptable.NOT_FOUND) {
+                globals = Context.getUndefinedValue();
+            }
+
+            config.delete("globals");
+
+            Object args[] = {fo.asText(), config, globals};
             NativeArray errors = callJSHint(cx, args);
 
             for (Object error : errors) {
@@ -104,11 +120,11 @@ public class JSHint {
         return result;
     }
 
-    private Object getConfig(Context cx, FileObject fo) throws ParseException, IOException {
+    private Scriptable getConfig(Context cx, FileObject fo) throws ParseException, IOException {
         JsonParser parser = new JsonParser(cx, scope);
         FileObject config = findConfig(fo);
         String json = config == null ? "{}" : config.asText();
-        return parser.parseValue(json);
+        return (Scriptable) parser.parseValue(json);
     }
 
     private FileObject findConfig(FileObject fo) {
