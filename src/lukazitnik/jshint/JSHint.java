@@ -39,7 +39,7 @@ public class JSHint {
         }
     }
 
-    public static JSHint getInstance () throws IOException {
+    public static JSHint getInstance() throws IOException {
         if (instance == null) {
             instance = new JSHint();
         }
@@ -54,27 +54,8 @@ public class JSHint {
 
         try {
             Scriptable config = getConfig(cx, fo);
-            Object globals = config.get("globals", config);
-
-            if (globals == Scriptable.NOT_FOUND) {
-                globals = Context.getUndefinedValue();
-            }
-
-            config.delete("globals");
-
-            Object args[] = {d.getText(0, d.getLength()), config, globals};
-            NativeArray errors = callJSHint(cx, args);
-
-            for (Object error : errors) {
-                if (error == null) {
-                    // Null is added to the end in case of an "Unrecoverable
-                    // syntax error." or "Too many errors.", so we could break
-                    // out of the loop just as well
-                    continue;
-                }
-
-                result.push(new JSHintError((NativeObject) error));
-            }
+            String code = d.getText(0, d.getLength());
+            result = lint(cx, code, config);
         } catch (IOException | ParseException | BadLocationException ex) {
             Exceptions.printStackTrace(ex);
         } finally {
@@ -90,31 +71,40 @@ public class JSHint {
 
         try {
             Scriptable config = getConfig(cx, fo);
-            Object globals = config.get("globals", config);
-
-            if (globals == Scriptable.NOT_FOUND) {
-                globals = Context.getUndefinedValue();
-            }
-
-            config.delete("globals");
-
-            Object args[] = {fo.asText(), config, globals};
-            NativeArray errors = callJSHint(cx, args);
-
-            for (Object error : errors) {
-                if (error == null) {
-                    // Null is added to the end in case of an "Unrecoverable
-                    // syntax error." or "Too many errors.", so we could break
-                    // out of the loop just as well
-                    continue;
-                }
-
-                result.push(new JSHintError((NativeObject) error));
-            }
+            String code = fo.asText();
+            result = lint(cx, code, config);
         } catch (IOException | ParseException ex) {
             Exceptions.printStackTrace(ex);
         } finally {
             Context.exit();
+        }
+
+        return result;
+    }
+
+    private LinkedList<JSHintError> lint(Context cx, String code, Scriptable config) {
+        LinkedList<JSHintError> result = new LinkedList<>();
+
+        Object globals = config.get("globals", config);
+
+        if (globals == Scriptable.NOT_FOUND) {
+            globals = Context.getUndefinedValue();
+        }
+
+        config.delete("globals");
+
+        Object args[] = {code, config, globals};
+        NativeArray errors = callJSHint(cx, args);
+
+        for (Object error : errors) {
+            if (error == null) {
+                    // Null is added to the end in case of an "Unrecoverable
+                // syntax error." or "Too many errors.", so we could break
+                // out of the loop just as well
+                continue;
+            }
+
+            result.push(new JSHintError((NativeObject) error));
         }
 
         return result;
