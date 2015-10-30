@@ -6,6 +6,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.LinkedList;
+import javax.swing.ImageIcon;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import lukazitnik.jshint.options.JSHintPanel;
@@ -16,10 +17,13 @@ import org.mozilla.javascript.Function;
 import org.mozilla.javascript.NativeArray;
 import org.mozilla.javascript.NativeObject;
 import org.mozilla.javascript.Scriptable;
+import org.mozilla.javascript.ScriptableObject;
 import org.mozilla.javascript.json.JsonParser;
 import org.mozilla.javascript.json.JsonParser.ParseException;
 import org.netbeans.modules.editor.NbEditorUtilities;
+import org.openide.awt.NotificationDisplayer;
 import org.openide.modules.InstalledFileLocator;
+import org.openide.util.NbBundle;
 import org.openide.util.NbPreferences;
 
 public class JSHint {
@@ -110,11 +114,27 @@ public class JSHint {
         return result;
     }
 
+    @NbBundle.Messages({
+        "LBL_InvalidRC=Invalid .jshintrc",
+        "ICON_InvalidRC="
+    })
     private Scriptable getConfig(Context cx, FileObject fo) throws ParseException, IOException {
         JsonParser parser = new JsonParser(cx, scope);
         FileObject config = findConfig(fo);
-        String json = config == null ? "{}" : config.asText();
-        return (Scriptable) parser.parseValue(json);
+
+        if (config == null) {
+            return cx.newObject(scope);
+        }
+
+        String json = config.asText();
+
+        try {
+            return (Scriptable) parser.parseValue(json);
+        }
+        catch (ParseException ex) {
+            NotificationDisplayer.getDefault().notify(Bundle.LBL_InvalidRC(), new ImageIcon(Bundle.ICON_InvalidRC()), config.getPath(), null);
+            return cx.newObject(scope);
+        }
     }
 
     private FileObject findConfig(FileObject fo) {

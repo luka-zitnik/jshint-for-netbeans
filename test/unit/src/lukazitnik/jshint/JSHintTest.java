@@ -95,4 +95,25 @@ public class JSHintTest extends NbTestCase {
         Assert.assertEquals(0, errors.size());
     }
 
+    @Test
+    public void testFallbackToDefaultConfig() throws IOException {
+        FileObject root = FileUtil.createMemoryFileSystem().getRoot();
+        FileObject jsFo = root.createData("index.js");
+        PrintWriter jsOut = (new PrintWriter(jsFo.getOutputStream()));
+
+        jsOut.write("a();");
+        jsOut.close();
+
+        FileObject config = root.createData(".jshintrc");
+        PrintWriter configOut = (new PrintWriter(config.getOutputStream()));
+
+        configOut.write("{\"undef\":true"); // Invalid JSON
+        configOut.close();
+
+        JSHint jshint =  JSHint.getInstance();
+        LinkedList<JSHintError> errors = jshint.lint(jsFo);
+
+        Assert.assertEquals(0, errors.size());
+    }
+
 }
