@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.LinkedList;
 import javax.swing.ImageIcon;
+import javax.swing.JTextArea;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import lukazitnik.jshint.options.JSHintPanel;
@@ -17,7 +18,6 @@ import org.mozilla.javascript.Function;
 import org.mozilla.javascript.NativeArray;
 import org.mozilla.javascript.NativeObject;
 import org.mozilla.javascript.Scriptable;
-import org.mozilla.javascript.ScriptableObject;
 import org.mozilla.javascript.json.JsonParser;
 import org.mozilla.javascript.json.JsonParser.ParseException;
 import org.netbeans.modules.editor.NbEditorUtilities;
@@ -102,7 +102,7 @@ public class JSHint {
 
         for (Object error : errors) {
             if (error == null) {
-                    // Null is added to the end in case of an "Unrecoverable
+                // Null is added to the end in case of an "Unrecoverable
                 // syntax error." or "Too many errors.", so we could break
                 // out of the loop just as well
                 continue;
@@ -116,6 +116,9 @@ public class JSHint {
 
     @NbBundle.Messages({
         "LBL_InvalidRC=Invalid .jshintrc",
+        "# {0} - Linted JavaScript file",
+        "# {1} - RC file",
+        "DESC_InvalidRC=File {0} was linted with default configuration because its related {1} is not valid json",
         "ICON_InvalidRC="
     })
     private Scriptable getConfig(Context cx, FileObject fo) throws ParseException, IOException {
@@ -132,7 +135,8 @@ public class JSHint {
             return (Scriptable) parser.parseValue(json);
         }
         catch (ParseException ex) {
-            NotificationDisplayer.getDefault().notify(Bundle.LBL_InvalidRC(), new ImageIcon(Bundle.ICON_InvalidRC()), config.getPath(), null);
+            JTextArea text = new JTextArea(Bundle.DESC_InvalidRC(fo.getPath(), config.getPath()));
+            NotificationDisplayer.getDefault().notify(Bundle.LBL_InvalidRC(), new ImageIcon(Bundle.ICON_InvalidRC()), text, text, NotificationDisplayer.Priority.NORMAL);
             return cx.newObject(scope);
         }
     }
