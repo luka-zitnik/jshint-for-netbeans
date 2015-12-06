@@ -29,8 +29,11 @@ class JSHintDocumentListener implements DocumentListener {
             lintingThread.stopAndFinishProgressHandle();
         }
 
-        lintingThread = new LintingThread(d);
-
-        lintingThread.start();
+        try {
+            lintingThread = new LintingThread(d);
+            lintingThread.start();
+        } catch (NullPointerException ex) {
+            // Can happen, according to http://statistics.netbeans.org/analytics/detail.do?id=221301
+        }
     }
 }
