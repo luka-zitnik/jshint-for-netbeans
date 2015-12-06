@@ -9,6 +9,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import javax.swing.SwingUtilities;
+import javax.swing.text.Document;
 import javax.swing.text.JTextComponent;
 import lukazitnik.jshint.JSHintError;
 import org.netbeans.api.editor.EditorRegistry;
@@ -26,8 +27,15 @@ public class EditorRegistryListener implements PropertyChangeListener {
             return;
         }
 
-        final NbEditorDocument focusedDocument = (NbEditorDocument) jtc.getDocument();
-        String mimeType = (String) focusedDocument.getProperty(NbEditorDocument.MIME_TYPE_PROP);
+        Document d = jtc.getDocument(); // Normally, an instance of org.netbeans.modules.csl.core.GsfDocument
+
+        if (d instanceof NbEditorDocument == false) {
+            // Annotations can only be added to NbEditorDocuments
+            return;
+        }
+
+        final NbEditorDocument nbd = (NbEditorDocument) d; // Upcast
+        String mimeType = (String) nbd.getProperty(NbEditorDocument.MIME_TYPE_PROP);
 
         if (!mimeType.equals("text/javascript")) {
             return;
@@ -35,10 +43,10 @@ public class EditorRegistryListener implements PropertyChangeListener {
 
         switch (evt.getPropertyName()) {
             case EditorRegistry.FOCUS_GAINED_PROPERTY:
-                if (!history.keySet().contains(focusedDocument)) {
+                if (!history.keySet().contains(nbd)) {
 
                     // The file has just been opened, so ...
-                    addDocumentListenerAndAnnotations(focusedDocument);
+                    addDocumentListenerAndAnnotations(nbd);
                 }
                 break;
             case EditorRegistry.COMPONENT_REMOVED_PROPERTY:
@@ -77,10 +85,15 @@ public class EditorRegistryListener implements PropertyChangeListener {
     private List<NbEditorDocument> getOpenJSDocuments() {
         List<NbEditorDocument> openDocuments = new ArrayList<>();
         for (JTextComponent component : EditorRegistry.componentList()) {
-            NbEditorDocument d = (NbEditorDocument) component.getDocument();
-            String mimeType = (String) d.getProperty(NbEditorDocument.MIME_TYPE_PROP);
+            Document d = component.getDocument();
+            if (d instanceof NbEditorDocument == false) {
+                // Annotations can only be added to NbEditorDocuments
+                continue;
+            }
+            NbEditorDocument nbd = (NbEditorDocument) component.getDocument();
+            String mimeType = (String) nbd.getProperty(NbEditorDocument.MIME_TYPE_PROP);
             if (mimeType.equals("text/javascript")) {
-                openDocuments.add(d);
+                openDocuments.add(nbd);
             }
         }
         return openDocuments;
